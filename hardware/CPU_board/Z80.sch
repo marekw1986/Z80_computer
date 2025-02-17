@@ -16944,6 +16944,119 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 </deviceset>
 </devicesets>
 </library>
+<library name="diode">
+<description>&lt;b&gt;Diodes&lt;/b&gt;&lt;p&gt;
+Based on the following sources:
+&lt;ul&gt;
+&lt;li&gt;Motorola : www.onsemi.com
+&lt;li&gt;Fairchild : www.fairchildsemi.com
+&lt;li&gt;Philips : www.semiconductors.com
+&lt;li&gt;Vishay : www.vishay.de
+&lt;/ul&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
+<packages>
+<package name="DO35-10">
+<description>&lt;B&gt;DIODE&lt;/B&gt;&lt;p&gt;
+diameter 2 mm, horizontal, grid 10.16 mm</description>
+<wire x1="5.08" y1="0" x2="4.191" y2="0" width="0.508" layer="51"/>
+<wire x1="-5.08" y1="0" x2="-4.191" y2="0" width="0.508" layer="51"/>
+<wire x1="-0.635" y1="0" x2="0" y2="0" width="0.1524" layer="21"/>
+<wire x1="1.016" y1="0.635" x2="1.016" y2="-0.635" width="0.1524" layer="21"/>
+<wire x1="1.016" y1="-0.635" x2="0" y2="0" width="0.1524" layer="21"/>
+<wire x1="0" y1="0" x2="1.524" y2="0" width="0.1524" layer="21"/>
+<wire x1="0" y1="0" x2="1.016" y2="0.635" width="0.1524" layer="21"/>
+<wire x1="0" y1="0.635" x2="0" y2="0" width="0.1524" layer="21"/>
+<wire x1="0" y1="0" x2="0" y2="-0.635" width="0.1524" layer="21"/>
+<wire x1="2.032" y1="1.016" x2="2.286" y2="0.762" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-2.286" y1="0.762" x2="-2.032" y2="1.016" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-2.286" y1="-0.762" x2="-2.032" y2="-1.016" width="0.1524" layer="21" curve="90"/>
+<wire x1="2.032" y1="-1.016" x2="2.286" y2="-0.762" width="0.1524" layer="21" curve="90"/>
+<wire x1="2.286" y1="-0.762" x2="2.286" y2="0.762" width="0.1524" layer="21"/>
+<wire x1="-2.286" y1="0.762" x2="-2.286" y2="-0.762" width="0.1524" layer="21"/>
+<wire x1="-2.032" y1="1.016" x2="2.032" y2="1.016" width="0.1524" layer="21"/>
+<wire x1="-2.032" y1="-1.016" x2="2.032" y2="-1.016" width="0.1524" layer="21"/>
+<pad name="C" x="-5.08" y="0" drill="0.8128" shape="long"/>
+<pad name="A" x="5.08" y="0" drill="0.8128" shape="long"/>
+<text x="-2.159" y="1.27" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-2.159" y="-2.667" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<rectangle x1="-1.905" y1="-1.016" x2="-1.397" y2="1.016" layer="21"/>
+<rectangle x1="2.286" y1="-0.254" x2="4.191" y2="0.254" layer="21"/>
+<rectangle x1="-4.191" y1="-0.254" x2="-2.286" y2="0.254" layer="21"/>
+</package>
+<package name="DO35-7">
+<description>&lt;B&gt;DIODE&lt;/B&gt;&lt;p&gt;
+diameter 2 mm, horizontal, grid 7.62 mm</description>
+<wire x1="3.81" y1="0" x2="2.921" y2="0" width="0.508" layer="51"/>
+<wire x1="-3.81" y1="0" x2="-2.921" y2="0" width="0.508" layer="51"/>
+<wire x1="-0.635" y1="0" x2="0" y2="0" width="0.1524" layer="21"/>
+<wire x1="1.016" y1="0.635" x2="1.016" y2="-0.635" width="0.1524" layer="21"/>
+<wire x1="1.016" y1="-0.635" x2="0" y2="0" width="0.1524" layer="21"/>
+<wire x1="0" y1="0" x2="1.524" y2="0" width="0.1524" layer="21"/>
+<wire x1="0" y1="0" x2="1.016" y2="0.635" width="0.1524" layer="21"/>
+<wire x1="0" y1="0.635" x2="0" y2="0" width="0.1524" layer="21"/>
+<wire x1="0" y1="0" x2="0" y2="-0.635" width="0.1524" layer="21"/>
+<wire x1="2.032" y1="1.016" x2="2.286" y2="0.762" width="0.1524" layer="21" curve="-90"/>
+<wire x1="2.286" y1="0.762" x2="2.286" y2="-0.762" width="0.1524" layer="21"/>
+<wire x1="2.032" y1="-1.016" x2="2.286" y2="-0.762" width="0.1524" layer="21" curve="90"/>
+<wire x1="-2.286" y1="0.762" x2="-2.032" y2="1.016" width="0.1524" layer="21" curve="-90"/>
+<wire x1="-2.286" y1="-0.762" x2="-2.032" y2="-1.016" width="0.1524" layer="21" curve="90"/>
+<wire x1="-2.032" y1="-1.016" x2="2.032" y2="-1.016" width="0.1524" layer="21"/>
+<wire x1="-2.286" y1="0.762" x2="-2.286" y2="-0.762" width="0.1524" layer="21"/>
+<wire x1="-2.032" y1="1.016" x2="2.032" y2="1.016" width="0.1524" layer="21"/>
+<pad name="C" x="-3.81" y="0" drill="0.8128" shape="long"/>
+<pad name="A" x="3.81" y="0" drill="0.8128" shape="long"/>
+<text x="-2.286" y="1.27" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-2.286" y="-2.667" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<rectangle x1="-1.905" y1="-1.016" x2="-1.397" y2="1.016" layer="21"/>
+<rectangle x1="2.286" y1="-0.254" x2="2.921" y2="0.254" layer="21"/>
+<rectangle x1="-2.921" y1="-0.254" x2="-2.286" y2="0.254" layer="21"/>
+</package>
+</packages>
+<symbols>
+<symbol name="D">
+<wire x1="-1.27" y1="-1.27" x2="1.27" y2="0" width="0.254" layer="94"/>
+<wire x1="1.27" y1="0" x2="-1.27" y2="1.27" width="0.254" layer="94"/>
+<wire x1="1.27" y1="1.27" x2="1.27" y2="0" width="0.254" layer="94"/>
+<wire x1="-1.27" y1="1.27" x2="-1.27" y2="-1.27" width="0.254" layer="94"/>
+<wire x1="1.27" y1="0" x2="1.27" y2="-1.27" width="0.254" layer="94"/>
+<text x="2.54" y="0.4826" size="1.778" layer="95">&gt;NAME</text>
+<text x="2.54" y="-2.3114" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="A" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
+<pin name="C" x="2.54" y="0" visible="off" length="short" direction="pas" rot="R180"/>
+<text x="-2.54" y="0" size="0.4064" layer="99" align="center">SpiceOrder 1</text>
+<text x="2.54" y="0" size="0.4064" layer="99" align="center">SpiceOrder 2</text>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="1N4148" prefix="D">
+<description>&lt;B&gt;DIODE&lt;/B&gt;&lt;p&gt;
+high speed (Philips)</description>
+<gates>
+<gate name="G$1" symbol="D" x="0" y="0"/>
+</gates>
+<devices>
+<device name="DO35-10" package="DO35-10">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="DO35-7" package="DO35-7">
+<connects>
+<connect gate="G$1" pin="A" pad="A"/>
+<connect gate="G$1" pin="C" pad="C"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -17011,6 +17124,12 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <part name="IC3" library="pal" deviceset="16V8" device=""/>
 <part name="JP3" library="pinhead" deviceset="PINHD-1X2" device=""/>
 <part name="R14" library="rcl" deviceset="R-EU_" device="0204/7" value="10k"/>
+<part name="C4" library="rcl" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="GND2" library="supply1" deviceset="GND" device=""/>
+<part name="D1" library="diode" deviceset="1N4148" device="DO35-7"/>
+<part name="R15" library="rcl" deviceset="R-EU_" device="R0603"/>
+<part name="JP1" library="pinhead" deviceset="PINHD-1X2" device=""/>
+<part name="GND9" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -17075,7 +17194,13 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <instance part="C7" gate="G$1" x="215.9" y="137.16"/>
 <instance part="IC3" gate="G$1" x="60.96" y="-101.6"/>
 <instance part="JP3" gate="G$1" x="91.44" y="134.62" rot="MR0"/>
-<instance part="R14" gate="G$1" x="-17.78" y="40.64" rot="R90"/>
+<instance part="R14" gate="G$1" x="-5.08" y="-38.1" rot="R90"/>
+<instance part="C4" gate="G$1" x="-5.08" y="-50.8"/>
+<instance part="GND2" gate="1" x="-5.08" y="-60.96"/>
+<instance part="D1" gate="G$1" x="2.54" y="-38.1" rot="R90"/>
+<instance part="R15" gate="G$1" x="10.16" y="-45.72" rot="R180"/>
+<instance part="JP1" gate="G$1" x="27.94" y="-50.8" rot="MR180"/>
+<instance part="GND9" gate="1" x="17.78" y="-60.96"/>
 </instances>
 <busses>
 </busses>
@@ -17198,11 +17323,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <wire x1="312.42" y1="144.78" x2="312.42" y2="154.94" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<wire x1="48.26" y1="-76.2" x2="43.18" y2="-76.2" width="0.1524" layer="91"/>
-<wire x1="43.18" y1="-76.2" x2="43.18" y2="-71.12" width="0.1524" layer="91"/>
-<label x="43.18" y="-71.12" size="1.4224" layer="95" rot="R90" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC1" gate="1" pin="VCC"/>
 <wire x1="12.7" y1="0" x2="2.54" y2="0" width="0.1524" layer="91"/>
 <label x="2.54" y="0" size="1.4224" layer="95" rot="R180" xref="yes"/>
@@ -17229,10 +17349,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <wire x1="-2.54" y1="48.26" x2="2.54" y2="48.26" width="0.1524" layer="91"/>
 <wire x1="2.54" y1="48.26" x2="2.54" y2="45.72" width="0.1524" layer="91"/>
 <junction x="-2.54" y="48.26"/>
-<pinref part="R14" gate="G$1" pin="2"/>
-<wire x1="-12.7" y1="48.26" x2="-17.78" y2="48.26" width="0.1524" layer="91"/>
-<wire x1="-17.78" y1="48.26" x2="-17.78" y2="45.72" width="0.1524" layer="91"/>
-<junction x="-12.7" y="48.26"/>
 </segment>
 <segment>
 <pinref part="QG1" gate="A" pin="VDD"/>
@@ -17288,6 +17404,16 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="R1" gate="G$1" pin="2"/>
 <wire x1="45.72" y1="-226.06" x2="45.72" y2="-223.52" width="0.1524" layer="91"/>
 <label x="45.72" y="-223.52" size="1.4224" layer="95" rot="R90" xref="yes"/>
+</segment>
+<segment>
+<pinref part="R14" gate="G$1" pin="2"/>
+<wire x1="-5.08" y1="-25.4" x2="-5.08" y2="-30.48" width="0.1524" layer="91"/>
+<label x="-5.08" y="-25.4" size="1.4224" layer="95" rot="R90" xref="yes"/>
+<pinref part="D1" gate="G$1" pin="C"/>
+<wire x1="-5.08" y1="-30.48" x2="-5.08" y2="-33.02" width="0.1524" layer="91"/>
+<wire x1="2.54" y1="-35.56" x2="2.54" y2="-30.48" width="0.1524" layer="91"/>
+<wire x1="2.54" y1="-30.48" x2="-5.08" y2="-30.48" width="0.1524" layer="91"/>
+<junction x="-5.08" y="-30.48"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -17468,6 +17594,17 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="GND20" gate="1" pin="GND"/>
 <wire x1="73.66" y1="-248.92" x2="73.66" y2="-246.38" width="0.1524" layer="91"/>
 <junction x="73.66" y="-246.38"/>
+</segment>
+<segment>
+<pinref part="C4" gate="G$1" pin="2"/>
+<pinref part="GND2" gate="1" pin="GND"/>
+<wire x1="-5.08" y1="-58.42" x2="-5.08" y2="-55.88" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="JP1" gate="G$1" pin="1"/>
+<wire x1="25.4" y1="-53.34" x2="17.78" y2="-53.34" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="-53.34" x2="17.78" y2="-58.42" width="0.1524" layer="91"/>
+<pinref part="GND9" gate="1" pin="GND"/>
 </segment>
 </net>
 <net name="D0" class="0">
@@ -17981,10 +18118,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <label x="-48.26" y="50.8" size="1.4224" layer="95" xref="yes"/>
 </segment>
 <segment>
-<wire x1="48.26" y1="-139.7" x2="43.18" y2="-139.7" width="0.1524" layer="91"/>
-<label x="43.18" y="-139.7" size="1.4224" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC3" gate="G$1" pin="I1"/>
 <wire x1="48.26" y1="-96.52" x2="43.18" y2="-96.52" width="0.1524" layer="91"/>
 <label x="43.18" y="-96.52" size="1.4224" layer="95" rot="R180" xref="yes"/>
@@ -18278,10 +18411,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <label x="-48.26" y="22.86" size="1.4224" layer="95" xref="yes"/>
 </segment>
 <segment>
-<wire x1="48.26" y1="-149.86" x2="43.18" y2="-149.86" width="0.1524" layer="91"/>
-<label x="43.18" y="-149.86" size="1.4224" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC3" gate="G$1" pin="I4"/>
 <wire x1="48.26" y1="-104.14" x2="43.18" y2="-104.14" width="0.1524" layer="91"/>
 <label x="43.18" y="-104.14" size="1.4224" layer="95" rot="R180" xref="yes"/>
@@ -18450,10 +18579,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <label x="-30.48" y="-86.36" size="1.4224" layer="95" xref="yes"/>
 </segment>
 <segment>
-<wire x1="48.26" y1="-127" x2="43.18" y2="-127" width="0.1524" layer="91"/>
-<label x="43.18" y="-127" size="1.4224" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <wire x1="48.26" y1="-88.9" x2="43.18" y2="-88.9" width="0.1524" layer="91"/>
 <pinref part="IC3" gate="G$1" pin="CLK"/>
 <label x="43.18" y="-88.9" size="1.778" layer="95" rot="R180" xref="yes"/>
@@ -18464,10 +18589,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="U$3" gate="G$1" pin="!CS"/>
 <wire x1="281.94" y1="38.1" x2="287.02" y2="38.1" width="0.1524" layer="91"/>
 <label x="287.02" y="38.1" size="1.4224" layer="95" xref="yes"/>
-</segment>
-<segment>
-<wire x1="73.66" y1="-152.4" x2="78.74" y2="-152.4" width="0.1524" layer="91"/>
-<label x="78.74" y="-152.4" size="1.4224" layer="95" xref="yes"/>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="O1"/>
@@ -18628,12 +18749,8 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <net name="!RESET" class="0">
 <segment>
 <pinref part="IC1" gate="1" pin="RESET"/>
-<wire x1="12.7" y1="22.86" x2="-17.78" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="22.86" x2="-25.4" y2="22.86" width="0.1524" layer="91"/>
 <label x="-25.4" y="22.86" size="1.4224" layer="95" rot="R180" xref="yes"/>
-<pinref part="R14" gate="G$1" pin="1"/>
-<wire x1="-17.78" y1="22.86" x2="-25.4" y2="22.86" width="0.1524" layer="91"/>
-<wire x1="-17.78" y1="35.56" x2="-17.78" y2="22.86" width="0.1524" layer="91"/>
-<junction x="-17.78" y="22.86"/>
 </segment>
 <segment>
 <wire x1="160.02" y1="-33.02" x2="165.1" y2="-33.02" width="0.1524" layer="91"/>
@@ -18649,6 +18766,21 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="CON1" gate="G$1" pin="/RESET"/>
 <wire x1="2.54" y1="-266.7" x2="-2.54" y2="-266.7" width="0.1524" layer="91"/>
 <label x="-2.54" y="-266.7" size="1.4224" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="R14" gate="G$1" pin="1"/>
+<wire x1="-5.08" y1="-43.18" x2="-5.08" y2="-45.72" width="0.1524" layer="91"/>
+<wire x1="-5.08" y1="-45.72" x2="-10.16" y2="-45.72" width="0.1524" layer="91"/>
+<label x="-10.16" y="-45.72" size="1.4224" layer="95" rot="R180" xref="yes"/>
+<pinref part="C4" gate="G$1" pin="1"/>
+<wire x1="-5.08" y1="-45.72" x2="-5.08" y2="-48.26" width="0.1524" layer="91"/>
+<junction x="-5.08" y="-45.72"/>
+<pinref part="D1" gate="G$1" pin="A"/>
+<wire x1="-5.08" y1="-45.72" x2="2.54" y2="-45.72" width="0.1524" layer="91"/>
+<wire x1="2.54" y1="-45.72" x2="2.54" y2="-40.64" width="0.1524" layer="91"/>
+<pinref part="R15" gate="G$1" pin="2"/>
+<wire x1="2.54" y1="-45.72" x2="5.08" y2="-45.72" width="0.1524" layer="91"/>
+<junction x="2.54" y="-45.72"/>
 </segment>
 </net>
 <net name="SET_BANK_A14" class="0">
@@ -18682,10 +18814,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <label x="-93.98" y="25.4" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<wire x1="48.26" y1="-157.48" x2="43.18" y2="-157.48" width="0.1524" layer="91"/>
-<label x="43.18" y="-157.48" size="1.4224" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC3" gate="G$1" pin="I6"/>
 <wire x1="48.26" y1="-109.22" x2="43.18" y2="-109.22" width="0.1524" layer="91"/>
 <label x="43.18" y="-109.22" size="1.4224" layer="95" rot="R180" xref="yes"/>
@@ -18696,10 +18824,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="IC1" gate="1" pin="MREQ"/>
 <wire x1="12.7" y1="58.42" x2="7.62" y2="58.42" width="0.1524" layer="91"/>
 <label x="7.62" y="58.42" size="1.4224" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
-<wire x1="48.26" y1="-147.32" x2="43.18" y2="-147.32" width="0.1524" layer="91"/>
-<label x="43.18" y="-147.32" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="IC2" gate="G$1" pin="MREQ"/>
@@ -18719,10 +18843,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <label x="134.62" y="40.64" size="1.4224" layer="95" xref="yes"/>
 </segment>
 <segment>
-<wire x1="73.66" y1="-132.08" x2="78.74" y2="-132.08" width="0.1524" layer="91"/>
-<label x="78.74" y="-132.08" size="1.4224" layer="95" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC3" gate="G$1" pin="O7"/>
 <wire x1="73.66" y1="-111.76" x2="78.74" y2="-111.76" width="0.1524" layer="91"/>
 <label x="78.74" y="-111.76" size="1.4224" layer="95" xref="yes"/>
@@ -18733,10 +18853,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="U$2" gate="G$1" pin="!CS"/>
 <wire x1="198.12" y1="38.1" x2="203.2" y2="38.1" width="0.1524" layer="91"/>
 <label x="203.2" y="38.1" size="1.4224" layer="95" xref="yes"/>
-</segment>
-<segment>
-<wire x1="73.66" y1="-139.7" x2="78.74" y2="-139.7" width="0.1524" layer="91"/>
-<label x="78.74" y="-139.7" size="1.4224" layer="95" xref="yes"/>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="O6"/>
@@ -18789,10 +18905,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <label x="165.1" y="-30.48" size="1.4224" layer="95" xref="yes"/>
 </segment>
 <segment>
-<wire x1="73.66" y1="-154.94" x2="78.74" y2="-154.94" width="0.1524" layer="91"/>
-<label x="78.74" y="-154.94" size="1.4224" layer="95" xref="yes"/>
-</segment>
-<segment>
 <wire x1="73.66" y1="-93.98" x2="78.74" y2="-93.98" width="0.1524" layer="91"/>
 <pinref part="IC3" gate="G$1" pin="O0"/>
 <label x="78.74" y="-93.98" size="1.4224" layer="95" xref="yes"/>
@@ -18810,10 +18922,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <label x="-93.98" y="27.94" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<wire x1="48.26" y1="-134.62" x2="43.18" y2="-134.62" width="0.1524" layer="91"/>
-<label x="43.18" y="-134.62" size="1.4224" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC3" gate="G$1" pin="I0"/>
 <wire x1="48.26" y1="-93.98" x2="43.18" y2="-93.98" width="0.1524" layer="91"/>
 <label x="43.18" y="-93.98" size="1.4224" layer="95" rot="R180" xref="yes"/>
@@ -18824,10 +18932,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="IC9" gate="A" pin="Y7"/>
 <wire x1="144.78" y1="-149.86" x2="149.86" y2="-149.86" width="0.1524" layer="91"/>
 <label x="149.86" y="-149.86" size="1.4224" layer="95" xref="yes"/>
-</segment>
-<segment>
-<wire x1="48.26" y1="-154.94" x2="43.18" y2="-154.94" width="0.1524" layer="91"/>
-<label x="43.18" y="-154.94" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="I7"/>
@@ -18842,20 +18946,12 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <label x="-48.26" y="15.24" size="1.4224" layer="95" xref="yes"/>
 </segment>
 <segment>
-<wire x1="73.66" y1="-149.86" x2="78.74" y2="-149.86" width="0.1524" layer="91"/>
-<label x="78.74" y="-149.86" size="1.4224" layer="95" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC9" gate="A" pin="Y1"/>
 <wire x1="144.78" y1="-134.62" x2="149.86" y2="-134.62" width="0.1524" layer="91"/>
 <label x="149.86" y="-134.62" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="PORT_CS" class="0">
-<segment>
-<wire x1="73.66" y1="-134.62" x2="78.74" y2="-134.62" width="0.1524" layer="91"/>
-<label x="78.74" y="-134.62" size="1.4224" layer="95" xref="yes"/>
-</segment>
 <segment>
 <pinref part="IC6" gate="A" pin="CLK"/>
 <wire x1="444.5" y1="20.32" x2="436.88" y2="20.32" width="0.1524" layer="91"/>
@@ -18946,10 +19042,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="IC6" gate="A" pin="Q3"/>
 </segment>
 <segment>
-<wire x1="48.26" y1="-152.4" x2="43.18" y2="-152.4" width="0.1524" layer="91"/>
-<label x="43.18" y="-152.4" size="1.4224" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC3" gate="G$1" pin="I5"/>
 <wire x1="48.26" y1="-106.68" x2="43.18" y2="-106.68" width="0.1524" layer="91"/>
 <label x="43.18" y="-106.68" size="1.4224" layer="95" rot="R180" xref="yes"/>
@@ -18989,10 +19081,6 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="IC11" gate="A" pin="G"/>
 <wire x1="-50.8" y1="-266.7" x2="-45.72" y2="-266.7" width="0.1524" layer="91"/>
 <label x="-45.72" y="-266.7" size="1.4224" layer="95" xref="yes"/>
-</segment>
-<segment>
-<wire x1="73.66" y1="-144.78" x2="78.74" y2="-144.78" width="0.1524" layer="91"/>
-<label x="78.74" y="-144.78" size="1.4224" layer="95" xref="yes"/>
 </segment>
 <segment>
 <pinref part="IC3" gate="G$1" pin="O5"/>
@@ -19118,6 +19206,15 @@ Source: con-hirose.lbr from Bob Starr &amp;lt;rtzaudio@mindspring.com&amp;gt;</d
 <pinref part="LED1" gate="G$1" pin="C"/>
 <wire x1="38.1" y1="-238.76" x2="53.34" y2="-238.76" width="0.1524" layer="91"/>
 <wire x1="53.34" y1="-238.76" x2="53.34" y2="-236.22" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$2" class="0">
+<segment>
+<pinref part="R15" gate="G$1" pin="1"/>
+<wire x1="15.24" y1="-45.72" x2="17.78" y2="-45.72" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="-45.72" x2="17.78" y2="-50.8" width="0.1524" layer="91"/>
+<pinref part="JP1" gate="G$1" pin="2"/>
+<wire x1="25.4" y1="-50.8" x2="17.78" y2="-50.8" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
