@@ -1,0 +1,21 @@
+GAL16V8
+G0
+
+; set pinout - can be altered later if needed
+CLOCK M1 A4 WR MREQ A15 ROMSHA IORQ LOCIOCS GND
+NC INTA CSEPR NC LOCPTCS NC LOCCFCS CSRAM2 CSRAM1 VCC
+
+/CSEPR = /A15 * /ROMSHA * /MREQ
+/CSRAM1 = /A15 * ROMSHA * /MREQ
+/CSRAM2 = A15 * /MREQ
+
+/LOCPTCS = /LOCIOCS * /A4 * /WR
+/LOCCFCS = /LOCIOCS * A4
+
+INTA = /M1 * /IORQ
+
+DESCRIPTION
+
+; IO address decoder
+; 0xE0 - 74273 port
+; 0xF0 - CF card
