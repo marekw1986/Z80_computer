@@ -18741,6 +18741,7 @@ high speed (Philips)</description>
 <segment>
 <pinref part="SV2" gate="1" pin="1"/>
 <wire x1="160.02" y1="-71.12" x2="165.1" y2="-71.12" width="0.1524" layer="91"/>
+<label x="165.1" y="-71.12" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="!RESET" class="0">
@@ -18814,6 +18815,11 @@ high speed (Philips)</description>
 <pinref part="IC3" gate="G$1" pin="I6"/>
 <wire x1="48.26" y1="-109.22" x2="43.18" y2="-109.22" width="0.1524" layer="91"/>
 <label x="43.18" y="-109.22" size="1.4224" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="SV2" gate="1" pin="44"/>
+<wire x1="144.78" y1="-17.78" x2="139.7" y2="-17.78" width="0.1524" layer="91"/>
+<label x="139.7" y="-17.78" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="!MREQ" class="0">
@@ -18927,6 +18933,11 @@ high speed (Philips)</description>
 <pinref part="IC9" gate="A" pin="G1"/>
 <wire x1="116.84" y1="-144.78" x2="114.3" y2="-144.78" width="0.1524" layer="91"/>
 <label x="114.3" y="-144.78" size="1.4224" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="SV2" gate="1" pin="43"/>
+<wire x1="160.02" y1="-17.78" x2="165.1" y2="-17.78" width="0.1524" layer="91"/>
+<label x="165.1" y="-17.78" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="LOCAL_IO_CS" class="0">
