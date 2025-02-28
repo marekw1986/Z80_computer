@@ -17222,6 +17222,10 @@ high speed (Philips)</description>
 <wire x1="-17.78" y1="38.1" x2="-17.78" y2="30.48" width="0.1524" layer="91"/>
 <junction x="-17.78" y="30.48"/>
 </segment>
+<segment>
+<pinref part="IC2" gate="G$1" pin="INT/PLSE"/>
+<wire x1="-88.9" y1="12.7" x2="-93.98" y2="12.7" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="VCC" class="0">
 <segment>
@@ -18737,13 +18741,6 @@ high speed (Philips)</description>
 <label x="165.1" y="-22.86" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="RDYIN" class="0">
-<segment>
-<pinref part="SV2" gate="1" pin="1"/>
-<wire x1="160.02" y1="-71.12" x2="165.1" y2="-71.12" width="0.1524" layer="91"/>
-<label x="165.1" y="-71.12" size="1.4224" layer="95" xref="yes"/>
-</segment>
-</net>
 <net name="!RESET" class="0">
 <segment>
 <pinref part="IC1" gate="1" pin="RESET"/>
@@ -18786,13 +18783,6 @@ high speed (Philips)</description>
 <wire x1="469.9" y1="43.18" x2="477.52" y2="43.18" width="0.1524" layer="91"/>
 <label x="477.52" y="43.18" size="1.4224" layer="95" xref="yes"/>
 <pinref part="IC6" gate="A" pin="Q1"/>
-</segment>
-</net>
-<net name="8275_DACK" class="0">
-<segment>
-<pinref part="SV2" gate="1" pin="2"/>
-<wire x1="144.78" y1="-71.12" x2="139.7" y2="-71.12" width="0.1524" layer="91"/>
-<label x="139.7" y="-71.12" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="!IORQ" class="0">
@@ -19241,6 +19231,17 @@ high speed (Philips)</description>
 <pinref part="R16" gate="G$1" pin="1"/>
 <wire x1="-88.9" y1="10.16" x2="-111.76" y2="10.16" width="0.1524" layer="91"/>
 <wire x1="-111.76" y1="10.16" x2="-111.76" y2="20.32" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="IEO" class="0">
+<segment>
+<pinref part="SV2" gate="1" pin="2"/>
+<wire x1="144.78" y1="-71.12" x2="139.7" y2="-71.12" width="0.1524" layer="91"/>
+<label x="139.7" y="-71.12" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC2" gate="G$1" pin="IEO"/>
+<wire x1="-88.9" y1="7.62" x2="-93.98" y2="7.62" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
