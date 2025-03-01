@@ -18010,7 +18010,6 @@ Source: http://www.semiconductors.philips.com/acrobat_download/datasheets/74HC_H
 <part name="C19" library="rcl" deviceset="C-EU" device="C0603" value="100N"/>
 <part name="JP3" library="pinhead" deviceset="PINHD-1X2" device="/90"/>
 <part name="GND14" library="supply1" deviceset="GND" device=""/>
-<part name="C21" library="rcl" deviceset="CPOL-EU" device="E3.5-8"/>
 <part name="C24" library="rcl" deviceset="CPOL-EU" device="SMCB"/>
 <part name="IC4" library="74xx-eu" deviceset="74*139" device="N" technology="HCT"/>
 <part name="GND12" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
@@ -18055,6 +18054,8 @@ Source: http://www.semiconductors.philips.com/acrobat_download/datasheets/74HC_H
 <part name="GND18" library="supply1" deviceset="GND" device=""/>
 <part name="R15" library="rcl" deviceset="R-EU_" device="R0603"/>
 <part name="C34" library="rcl" deviceset="C-EU" device="C0603" value="100N"/>
+<part name="C35" library="rcl" deviceset="CPOL-EU" device="E5-10.5"/>
+<part name="C21" library="rcl" deviceset="CPOL-EU" device="SMCB"/>
 </parts>
 <sheets>
 <sheet>
@@ -18115,7 +18116,6 @@ Source: http://www.semiconductors.philips.com/acrobat_download/datasheets/74HC_H
 <instance part="C19" gate="G$1" x="-170.18" y="231.14"/>
 <instance part="JP3" gate="G$1" x="-43.18" y="226.06"/>
 <instance part="GND14" gate="1" x="-53.34" y="218.44"/>
-<instance part="C21" gate="G$1" x="-177.8" y="231.14"/>
 <instance part="C24" gate="G$1" x="-185.42" y="231.14"/>
 <instance part="IC4" gate="A" x="53.34" y="-68.58"/>
 <instance part="IC4" gate="B" x="111.76" y="-68.58"/>
@@ -18167,6 +18167,8 @@ Source: http://www.semiconductors.philips.com/acrobat_download/datasheets/74HC_H
 <instance part="GND18" gate="1" x="175.26" y="312.42"/>
 <instance part="R15" gate="G$1" x="162.56" y="335.28" rot="R90"/>
 <instance part="C34" gate="G$1" x="-63.5" y="231.14"/>
+<instance part="C35" gate="G$1" x="-177.8" y="231.14"/>
+<instance part="C21" gate="G$1" x="-193.04" y="231.14"/>
 </instances>
 <busses>
 </busses>
@@ -18267,7 +18269,6 @@ Source: http://www.semiconductors.philips.com/acrobat_download/datasheets/74HC_H
 <wire x1="-162.56" y1="223.52" x2="-170.18" y2="223.52" width="0.1524" layer="91"/>
 <wire x1="-170.18" y1="223.52" x2="-170.18" y2="226.06" width="0.1524" layer="91"/>
 <junction x="-162.56" y="223.52"/>
-<pinref part="C21" gate="G$1" pin="-"/>
 <wire x1="-170.18" y1="223.52" x2="-177.8" y2="223.52" width="0.1524" layer="91"/>
 <wire x1="-177.8" y1="223.52" x2="-177.8" y2="226.06" width="0.1524" layer="91"/>
 <junction x="-170.18" y="223.52"/>
@@ -18295,6 +18296,11 @@ Source: http://www.semiconductors.philips.com/acrobat_download/datasheets/74HC_H
 <wire x1="-71.12" y1="223.52" x2="-63.5" y2="223.52" width="0.1524" layer="91"/>
 <wire x1="-63.5" y1="223.52" x2="-63.5" y2="226.06" width="0.1524" layer="91"/>
 <junction x="-71.12" y="223.52"/>
+<pinref part="C35" gate="G$1" pin="-"/>
+<pinref part="C21" gate="G$1" pin="-"/>
+<wire x1="-185.42" y1="223.52" x2="-193.04" y2="223.52" width="0.1524" layer="91"/>
+<wire x1="-193.04" y1="223.52" x2="-193.04" y2="226.06" width="0.1524" layer="91"/>
+<junction x="-185.42" y="223.52"/>
 </segment>
 <segment>
 <pinref part="GND15" gate="1" pin="GND"/>
@@ -19067,7 +19073,6 @@ Source: http://www.semiconductors.philips.com/acrobat_download/datasheets/74HC_H
 <wire x1="-162.56" y1="236.22" x2="-170.18" y2="236.22" width="0.1524" layer="91"/>
 <wire x1="-170.18" y1="236.22" x2="-170.18" y2="233.68" width="0.1524" layer="91"/>
 <junction x="-162.56" y="236.22"/>
-<pinref part="C21" gate="G$1" pin="+"/>
 <wire x1="-170.18" y1="236.22" x2="-177.8" y2="236.22" width="0.1524" layer="91"/>
 <wire x1="-177.8" y1="236.22" x2="-177.8" y2="233.68" width="0.1524" layer="91"/>
 <junction x="-170.18" y="236.22"/>
@@ -19095,6 +19100,11 @@ Source: http://www.semiconductors.philips.com/acrobat_download/datasheets/74HC_H
 <wire x1="-71.12" y1="236.22" x2="-63.5" y2="236.22" width="0.1524" layer="91"/>
 <wire x1="-63.5" y1="236.22" x2="-63.5" y2="233.68" width="0.1524" layer="91"/>
 <junction x="-71.12" y="236.22"/>
+<pinref part="C35" gate="G$1" pin="+"/>
+<pinref part="C21" gate="G$1" pin="+"/>
+<wire x1="-185.42" y1="236.22" x2="-193.04" y2="236.22" width="0.1524" layer="91"/>
+<wire x1="-193.04" y1="236.22" x2="-193.04" y2="233.68" width="0.1524" layer="91"/>
+<junction x="-185.42" y="236.22"/>
 </segment>
 <segment>
 <pinref part="U$2" gate="G$1" pin="ALE"/>
