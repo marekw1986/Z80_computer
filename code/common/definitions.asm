@@ -1,12 +1,15 @@
 PORT_74237   		EQU		0E0H
 
-UART_8251_DATA    	EQU     40H
-UART_8251_CTRL		EQU		41H
+DART_A_CMD          EQU     40H
+DART_A_DATA         EQU     41H
+DART_B_CMD          EQU     42H
+DART_B_DATA         EQU     43H
 
-COUNT_REG_0_8253 	EQU 	48H
-COUNT_REG_1_8253 	EQU 	49H
-COUNT_REG_2_8253 	EQU 	4AH
-CONTR_W_8253 		EQU 	4BH
+CTC_BASE            EQU     48H           ; Base I/O address of CTC (example)
+CTC_CH0             EQU     CTC_BASE + 0  ; Channel 0
+CTC_CH1             EQU     CTC_BASE + 1  ; Channel 1 (used for baud)
+CTC_CH2             EQU     CTC_BASE + 2  ; Channel 2 (used for baud)
+CTC_CH3             EQU     CTC_BASE + 3  ; Channel 3
 
 PIC_8259_LOW		EQU		58H
 PIC_8259_HIGH		EQU		59H
@@ -49,8 +52,8 @@ MODE_5 				EQU 	0AH
 BCD 				EQU 	01H
 BIN 				EQU 	00H
 
-TxRDY_MASK   		EQU 	01H
-RxRDY_MASK			EQU		02H	
+TxRDY_MASK   		EQU 	04H
+RxRDY_MASK			EQU		01H	
 
 ; CF REGS
 CFBASE              EQU     0F0H

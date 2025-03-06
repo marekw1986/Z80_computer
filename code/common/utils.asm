@@ -3,11 +3,11 @@
 OUT_CHAR:
 		PUSH PSW
 OUT_CHAR_WAIT:    
-		IN   UART_8251_CTRL             ;COME HERE TO DO OUTPUT
+		IN   DART_A_CMD                 ;COME HERE TO DO OUTPUT
         ANI  TxRDY_MASK                 ;STATUS BIT
         JZ   OUT_CHAR_WAIT              ;NOT READY, WAIT
         POP  PSW                        ;READY, GET OLD A BACK
-        OUT  UART_8251_DATA             ;AND SEND IT OUT
+        OUT  DART_A_DATA                ;AND SEND IT OUT
 		RET
     
 DELAY:
