@@ -1,9 +1,9 @@
 PORT_74237   		EQU		0E0H
 
-DART_A_CMD          EQU     40H
-DART_A_DATA         EQU     41H
-DART_B_CMD          EQU     42H
-DART_B_DATA         EQU     43H
+DART_A_DATA        EQU     40H
+DART_A_CMD         EQU     41H
+DART_B_DATA        EQU     42H
+DART_B_CMD         EQU     43H
 
 CTC_BASE            EQU     48H           ; Base I/O address of CTC (example)
 CTC_CH0             EQU     CTC_BASE + 0  ; Channel 0
