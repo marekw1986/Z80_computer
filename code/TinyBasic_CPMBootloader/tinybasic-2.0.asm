@@ -1538,7 +1538,7 @@ INIT:   STA  OCSW
         OUT DART_A_CMD
         MVI A, 4         ; Register 4
         OUT DART_A_CMD
-        MVI A, 04H       ; x1 clock, 1 stop bit, no parity
+        MVI A, 44H       ; x16 clock, 1 stop bit, no parity
         OUT DART_A_CMD
         MVI A, 5         ; Register 5
         OUT DART_A_CMD
@@ -1557,7 +1557,7 @@ INIT:   STA  OCSW
         OUT DART_B_CMD
         MVI A, 4         ; Register 4
         OUT DART_B_CMD
-        MVI A, 04H       ; x1 clock, 1 stop bit, no parity
+        MVI A, 44H       ; x16 clock, 1 stop bit, no parity
         OUT DART_B_CMD
         MVI A, 5         ; Register 5
         OUT DART_B_CMD
