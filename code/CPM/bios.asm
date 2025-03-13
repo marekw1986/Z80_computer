@@ -559,11 +559,62 @@ BIOS_WRITE_PROC:
 		POP B
 		POP PSW
 	ENDIF
-	
+		PUSH B				; Now save remaining registers
+		PUSH D
+		LDA DISK_TRACK
+		ADI 00H				;This is temp, TODO: remove hardwired addres of partition
+		STA CFLBA0
+		LDA DISK_TRACK+1
+		ACI 08H
+		STA CFLBA1
+		MVI A, 0
+		STA CFLBA2
+		STA CFLBA3
+		; First read sector to have complete data in buffer
+        LXI D, BLKDAT
+		CALL CFRSECT
+		CPI 00H
+		JNZ BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
+		CALL BIOS_CALC_SECT_IN_BUFFER
+		; Now DE contains the 16-bit result of multiplying the original value by 128
+		; D holds the high byte and E holds the low byte of the result
+		; Calculate the address of the CP/M sector in the BLKDAT
+		LXI H, BLKDAT
+		MOV A, E
+		ADD L
+		MOV E, A
+		MOV A, D
+		ADC H
+		MOV D, A
+        JMP BIOS_WRITE_PERFORM
+        ; No need to calculate sector location in BLKDAT.
+        ; Thanks to deblocking code = 2 we know it is first secor of new track
+        ; Just fill remaining bytes of buffer with 0xE5 and copy secotr to the
+        ; beginning of BLKDAT. Then write.
+BIOS_WRITE_PERFORM:
+		; Addres of sector in BLKDAT is now in DE
+		LHLD DISK_DMA	; Load source address to HL
+		; Replace HL and DE. HL will now contain address od sector in BLKDAT and DE will store source from DISK_DMA
+		XCHG
+		LXI B, 0080H	; How many bytes to copy?
+		CALL MEMCOPY
+		; Buffer is updated with new sector data. Perform write.
+		LXI D, BLKDAT
+		CALL CFWSECT
+		CPI 00H			; Check result
+		JNZ BIOS_WRITE_RET_ERR
+		JMP BIOS_WRITE_RET_OK				
+BIOS_WRITE_RET_ERR:
+		MVI A, 1
+		JMP BIOS_WRITE_RET
+BIOS_WRITE_RET_OK:
+		MVI A, 0
+BIOS_WRITE_RET:
+		POP D
+		POP B	
 		LHLD ORIGINAL_SP; Restore original stack
 		SPHL
 		POP H			; Restore original content of HL
-		MVI A, 1	; <--- Stub error in every write
 		RET
 		 
 BIOS_PRSTAT_PROC:
