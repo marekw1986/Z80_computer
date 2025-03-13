@@ -1,4 +1,5 @@
-        include "labels.asm"
+        include "variables.asm"
+
 CCP		EQU	0DC00H   ; was 2200H
 BDOS	EQU CCP+806H
 BIOS	EQU CCP+1600H
@@ -767,12 +768,11 @@ PRINT_COLON:
 		DB 00H
 		RET
 	ENDIF
-    
-        include "variables.asm"
+
+        include "cf.asm"
+        include "utils.asm"
         include "../common/definitions.asm"
-        include "../common/utils.asm"
         include "../common/hexdump.asm"
-        include "../common/cf.asm"
 	
 LAST_CHAR		DB	00H		; Last ASCII character from keyboard	
 DISK_DISK:		DB	00H		; Should it be here?
@@ -850,7 +850,3 @@ BIOS_STACK
 		error "Bios overwritten system variables!"
 	ENDIF
 		END
-		
-		
-;        ORG  7FFFH
-;STACK:  DS   0                          ;STACK STARTS HERE
