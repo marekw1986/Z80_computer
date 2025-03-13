@@ -1,7 +1,7 @@
 		ORG	 0FBFFH
 SYSTEM_VARIABLES:
 BLKDAT: DS   512                        ;BUFFER FOR SECTOR TRANSFER
-;BLKENDL DS   0                          ;BUFFER ENDS
+BLKENDL DS   1                          ;BUFFER ENDS
 CFVAL   DS   1
 CFLBA3	DS	 1
 CFLBA2	DS	 1

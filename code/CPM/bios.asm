@@ -450,7 +450,7 @@ BIOS_READ_PROC:
 		MVI A, 0
 		STA CFLBA2
 		STA CFLBA3
-		LXI D, BLKDAT
+        LXI D, BLKDAT
 		CALL CFRSECT
 	IF DEBUG > 1
         PUSH PSW
@@ -465,15 +465,15 @@ BIOS_READ_PROC:
 	ENDIF
 		; If no error there should be 0 in A
 		CPI 00H
-		JZ BIOS_READ_PROC_GET_SECT		; No error, just read sector
-		POP D							; Otherwise report error and return - first restore registers
+		JZ BIOS_READ_PROC_GET_SECT		; No error, just read sector. Otherwise report error and return.
+		POP D							; Restore registers
 		POP B
 		LHLD ORIGINAL_SP				; Restore original stack
 		SPHL
 		POP H							; Restore original content of HL
 		MVI A, 1						; Report error					
 		RET								; Return
-BIOS_READ_PROC_GET_SECT
+BIOS_READ_PROC_GET_SECT:
         CALL BIOS_CALC_SECT_IN_BUFFER
 		; Now DE contains the 16-bit result of multiplying the original value by 128
 		; D holds the high byte and E holds the low byte of the result
