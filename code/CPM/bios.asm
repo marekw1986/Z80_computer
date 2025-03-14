@@ -608,8 +608,7 @@ BIOS_WRITE_PROC:
 		STA CFLBA2
 		STA CFLBA3
 		; First read sector to have complete data in buffer
-        LXI D, BLKDAT
-		CALL CFRSECT
+		CALL CFRSECT_WITH_CACHE
 		CPI 00H
 		JNZ BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
 		CALL BIOS_CALC_SECT_IN_BUFFER
@@ -644,12 +643,12 @@ BIOS_WRITE_PERFORM:
 BIOS_WRITE_RET_ERR:
         MVI A, 00H
         STA CFVAL
-        CALL CFUPDPLBA
 		MVI A, 1
 		JMP BIOS_WRITE_RET
 BIOS_WRITE_RET_OK:
         MVI A, 01H
         STA CFVAL
+        CALL CFUPDPLBA
 		MVI A, 0
 BIOS_WRITE_RET:
 		POP D
