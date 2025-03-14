@@ -96,14 +96,7 @@ CFRSECT_WITH_CACHE_PERFORM:
 		MVI A, 01H
 		STA CFVAL
 		; copy CFLBAx toPCFLBAx
-        LDA CFLBA3
-        STA PCFLBA3
-        LDA CFLBA2
-        STA PCFLBA2
-        LDA CFLBA1
-        STA PCFLBA1
-        LDA CFLBA0
-        STA PCFLBA0
+        CALL CFUPDPLBA
 		POP PSW 
 		RET
 CFRSECT_WITH_CACHE_BAD:
@@ -181,4 +174,15 @@ CFLDPARTADDR:
         STA PARTADDR+14
         LDA BLKDAT+494+8+3
         STA PARTADDR+15
+        RET
+
+CFUPDPLBA:
+        LDA CFLBA3
+        STA PCFLBA3
+        LDA CFLBA2
+        STA PCFLBA2
+        LDA CFLBA1
+        STA PCFLBA1
+        LDA CFLBA0
+        STA PCFLBA0
         RET
