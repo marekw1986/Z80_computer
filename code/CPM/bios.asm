@@ -327,36 +327,15 @@ BIOS_SETTRK_PROC:
 		RET
 		  
 BIOS_SELDSK_PROC:
-		PUSH PSW
 		MOV A, C
-		STA DISK_DISK
-		POP PSW
-		;LXI H, 0
-		LXI H, DISKA_DPH
-	IF DEBUG > 1
-		PUSH H				; Save content  of HL on original stack, then switch to bios stack
-		LXI H, 0000H
-		DAD SP	; HL = HL + SP
-		SHLD ORIGINAL_SP
-		LXI H, BIOS_STACK
-		SPHL	
-        PUSH PSW
-        PUSH B
-		PUSH D
-		PUSH H
-		CALL IPUTS
-		DB 'SELDSK procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP H
-		POP D
-		POP B
-		POP PSW
-		LHLD ORIGINAL_SP; Restore original stack
-		SPHL
-		POP H			; Restore original content of HL
-	ENDIF		
+        CPI 04H     ; Only four partitions supported
+        JNC BIOS_SELDSK_PROC_WRNDSK
+        STA DISK_DISK
+		LXI H, DISKA_DPH	
 		RET
+BIOS_SELDSK_PROC_WRNDSK:
+        LXI H, 0
+        RET
 		
 BIOS_SETSEC_PROC:
 		PUSH H
