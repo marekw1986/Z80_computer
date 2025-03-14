@@ -742,15 +742,26 @@ CALC_SECTOR_SHIFT_LOOP:
 		RET
         
 CALC_CFLBA_FROM_PART_ADR:
-        LHLD DISK_TRACK        
-        LDA PARTADDR
-        MOV B, A
-        LDA PARTADDR+1
-        MOV C, A
-        LDA PARTADDR+2
-        MOV D, A
-        LDA PARTADDR+3
-        MOV E, A
+        LXI H, PARTADDR
+        LDA DISK_DISK
+CALC_CFLBA_LOOP_START
+        CPI 00H
+        JZ CALC_CFLBA_LOOP_END
+        DCR A
+        INX H
+        INX H
+        INX H
+        INX H
+        JMP CALC_CFLBA_LOOP_START
+CALC_CFLBA_LOOP_END:       
+        MOV B, M
+        INX H
+        MOV C, M
+        INX H
+        MOV D, M
+        INX H
+        MOV E, M
+        LHLD DISK_TRACK
         ; ADD lower 16 bits (HL + BC)
         MOV   A, L
         ADD   B            ; A = L + B
