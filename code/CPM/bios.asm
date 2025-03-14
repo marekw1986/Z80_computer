@@ -63,6 +63,8 @@ ZERO_LOOP:
         MOV A, B
         ORA C
         JNZ ZERO_LOOP
+        CALL CFGETMBR
+        CALL CFLDPARTADDR
 CFVAR_INIT:
 		MVI A, 00H
 		STA	CFLBA3
@@ -450,9 +452,44 @@ BIOS_READ_PROC:
 		MVI A, 0
 		STA CFLBA2
 		STA CFLBA3
-        LXI D, BLKDAT
-		CALL CFRSECT
-	IF DEBUG > 1
+        
+        ; WORK IN PROGRESS
+        ;LHLD DISK_TRACK
+        ;LXI D, CFLBA0
+        ;MOV B, M
+        ;INX D
+        ;MOV C, M
+        ;INX D
+        ;MOV D, M
+        ;INX D
+        ;MOV E, M
+        ; Add 16-bit value (DISK_TRACK/HL) to lower 16 bits of LBA (BC)
+        ;MOV A, C
+        ;ADD L           ; C = C + L (low byte)
+        ;MOV C, A
+        ;MOV A, B
+        ;ADC H           ; B = B + H + carry
+        ;MOV B, A
+        ; Propagate carry into upper 16 bits
+        ;MOV A, D
+        ;ADC A           ; D = D + carry
+        ;MOV D, A
+        ;MOV A, E
+        ;ADC A           ; E = E + carry
+        ;MOV E, A
+        ; Store result back at LBA
+        ;LXI H, CFLBA0
+        ;MOV M, C
+        ;INX H
+        ;MOV M, B
+        ;INX H
+        ;MOV M, D
+        ;INX H
+        ;MOV M, E
+        ; WORK IN PROGRESS
+        
+		CALL CFRSECT_WITH_CACHE
+	IF DEBUG > 0
         PUSH PSW
         PUSH B
 		PUSH D
@@ -605,9 +642,13 @@ BIOS_WRITE_PERFORM:
 		JNZ BIOS_WRITE_RET_ERR
 		JMP BIOS_WRITE_RET_OK				
 BIOS_WRITE_RET_ERR:
+        MVI A, 00H
+        STA CFVAL
 		MVI A, 1
 		JMP BIOS_WRITE_RET
 BIOS_WRITE_RET_OK:
+        MVI A, 01H
+        STA CFVAL
 		MVI A, 0
 BIOS_WRITE_RET:
 		POP D

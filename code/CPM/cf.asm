@@ -96,10 +96,14 @@ CFRSECT_WITH_CACHE_PERFORM:
 		MVI A, 01H
 		STA CFVAL
 		; copy CFLBAx toPCFLBAx
-		LXI D, CFLBA3
-		LXI H, PCFLBA3
-		MVI B, 4
-		CALL MEMCOPY
+        LDA CFLBA3
+        STA PCFLBA3
+        LDA CFLBA2
+        STA PCFLBA2
+        LDA CFLBA1
+        STA PCFLBA1
+        LDA CFLBA0
+        STA PCFLBA0
 		POP PSW 
 		RET
 CFRSECT_WITH_CACHE_BAD:
@@ -118,4 +122,63 @@ CFWSECT:
         OUT CFREG7
         CALL CFWRITE
         CALL CFCHERR
+        RET
+        
+CFGETMBR:
+		MVI A, 00H
+		OUT CFREG3						;LBA 0
+		OUT CFREG4						;LBA 1
+		OUT CFREG5						;LBA 2
+		;ANI 0FH	                        ;FILTER OUT LBA BITS
+		;ORI 0E0H	                    ;MODE LBA, MASTER DEV
+		MVI A, 0E0H
+        OUT CFREG6
+        MVI A, 01H
+        OUT	CFREG2						;READ ONE SECTOR
+		CALL CFWAIT
+		MVI A, 20H						;READ SECTOR COMMAND
+		OUT	CFREG7
+		LXI	D, BLKDAT
+		CALL CFREAD
+		CALL CFCHERR
+		RET
+
+; This assumes that MBR is already in BLKDAT
+; CALL CFGETMBR FIRST!
+CFLDPARTADDR:
+        LDA BLKDAT+446+8
+        STA PARTADDR
+        LDA BLKDAT+446+8+1
+        STA PARTADDR+1
+        LDA BLKDAT+446+8+2
+        STA PARTADDR+2
+        LDA BLKDAT+446+8+3
+        STA PARTADDR+3
+        
+        LDA BLKDAT+462+8
+        STA PARTADDR+4
+        LDA BLKDAT+462+8+1
+        STA PARTADDR+5
+        LDA BLKDAT+462+8+2
+        STA PARTADDR+6
+        LDA BLKDAT+462+8+3
+        STA PARTADDR+7
+        
+        LDA BLKDAT+478+8
+        STA PARTADDR+8
+        LDA BLKDAT+478+8+1
+        STA PARTADDR+9
+        LDA BLKDAT+478+8+2
+        STA PARTADDR+10
+        LDA BLKDAT+478+8+3
+        STA PARTADDR+11
+
+        LDA BLKDAT+494+8
+        STA PARTADDR+12
+        LDA BLKDAT+494+8+1
+        STA PARTADDR+13
+        LDA BLKDAT+494+8+2
+        STA PARTADDR+14
+        LDA BLKDAT+494+8+3
+        STA PARTADDR+15
         RET
