@@ -422,51 +422,7 @@ BIOS_READ_PROC:
 	ENDIF
 		PUSH B				; Now save remaining registers
 		PUSH D
-		LDA DISK_TRACK
-		ADI 00H				;This is temp, TODO: remove hardwired addres of partition
-		STA CFLBA0
-		LDA DISK_TRACK+1
-		ACI 08H
-		STA CFLBA1
-		MVI A, 0
-		STA CFLBA2
-		STA CFLBA3
-        
-        ; WORK IN PROGRESS
-        ;LHLD DISK_TRACK
-        ;LXI D, CFLBA0
-        ;MOV B, M
-        ;INX D
-        ;MOV C, M
-        ;INX D
-        ;MOV D, M
-        ;INX D
-        ;MOV E, M
-        ; Add 16-bit value (DISK_TRACK/HL) to lower 16 bits of LBA (BC)
-        ;MOV A, C
-        ;ADD L           ; C = C + L (low byte)
-        ;MOV C, A
-        ;MOV A, B
-        ;ADC H           ; B = B + H + carry
-        ;MOV B, A
-        ; Propagate carry into upper 16 bits
-        ;MOV A, D
-        ;ADC A           ; D = D + carry
-        ;MOV D, A
-        ;MOV A, E
-        ;ADC A           ; E = E + carry
-        ;MOV E, A
-        ; Store result back at LBA
-        ;LXI H, CFLBA0
-        ;MOV M, C
-        ;INX H
-        ;MOV M, B
-        ;INX H
-        ;MOV M, D
-        ;INX H
-        ;MOV M, E
-        ; WORK IN PROGRESS
-        
+        CALL CALC_CFLBA_FROM_PART_ADR
 		CALL CFRSECT_WITH_CACHE
 	IF DEBUG > 0
         PUSH PSW
@@ -577,15 +533,6 @@ BIOS_WRITE_PROC:
 	ENDIF
 		PUSH B				; Now save remaining registers
 		PUSH D
-		LDA DISK_TRACK
-		ADI 00H				;This is temp, TODO: remove hardwired addres of partition
-		STA CFLBA0
-		LDA DISK_TRACK+1
-		ACI 08H
-		STA CFLBA1
-		MVI A, 0
-		STA CFLBA2
-		STA CFLBA3
         ; Check content of C - deblocking code
         MOV A, C
         CPI 2               ; Is it first sector of new track?
@@ -630,6 +577,7 @@ BIOS_WRITE_PERFORM:
 		LXI B, 0080H	; How many bytes to copy?
 		CALL MEMCOPY
 		; Buffer is updated with new sector data. Perform write.
+        CALL CALC_CFLBA_FROM_PART_ADR
 		LXI D, BLKDAT
 		CALL CFWSECT
 		CPI 00H			; Check result
@@ -791,7 +739,44 @@ CALC_SECTOR_SHIFT_LOOP:
         MOV D, A  
         DCR B   ; Decrement counter
         JNZ CALC_SECTOR_SHIFT_LOOP  ; Repeat until done		
-		RET		
+		RET
+        
+CALC_CFLBA_FROM_PART_ADR:
+        LHLD DISK_TRACK        
+        LDA PARTADDR
+        MOV B, A
+        LDA PARTADDR+1
+        MOV C, A
+        LDA PARTADDR+2
+        MOV D, A
+        LDA PARTADDR+3
+        MOV E, A
+        ; ADD lower 16 bits (HL + BC)
+        MOV   A, L
+        ADD   B            ; A = L + B
+        MOV   B, A         ; Store result in C
+        MOV   A, H
+        ADC   C            ; A = H + C + Carry
+        MOV   C, A         ; Store result in B
+        ; ADD upper 16 bits (DE + Carry)
+        MOV   A, D
+        MVI   D, 00H
+        ADC   D             ; D = D + Carry
+        MOV   D, A
+        MOV   A, E
+        MVI   E, 00H
+        ADC   E             ; E = E + Carry
+        MOV   E, A
+        ; Store the result back at LBA        
+        MOV A, B
+        STA CFLBA0
+        MOV A, C
+        STA CFLBA1
+        MOV A, D
+        STA CFLBA2
+        MOV A, E
+        STA CFLBA3
+        RET
 		
 	IF DEBUG > 0
 PRINT_DISK_DEBUG
