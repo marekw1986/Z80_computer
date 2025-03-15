@@ -64,6 +64,13 @@ ZERO_LOOP:
         ORA C
         JNZ ZERO_LOOP
         CALL CFGETMBR
+        CPI 00H                     ; Check if MBR loaded properly
+        JZ LD_PART_TABLE
+        CALL IPUTS
+        DB 'MBR load err. Reset required.'
+        DB 00H
+        CALL ENDLESS_LOOP
+LD_PART_TABLE:
         CALL CFLDPARTADDR
 CFVAR_INIT:
 		MVI A, 00H
