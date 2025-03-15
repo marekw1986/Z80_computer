@@ -423,6 +423,8 @@ BIOS_READ_PROC:
 		PUSH B				; Now save remaining registers
 		PUSH D
         CALL CALC_CFLBA_FROM_PART_ADR
+        CPI 00H                            ; If 0 in A, no valid LBA calculated
+        JZ BIOS_READ_PROC_RET_ERR          ; In that case return and report error
 		CALL CFRSECT_WITH_CACHE
 	IF DEBUG > 0
         PUSH PSW
@@ -438,6 +440,7 @@ BIOS_READ_PROC:
 		; If no error there should be 0 in A
 		CPI 00H
 		JZ BIOS_READ_PROC_GET_SECT		; No error, just read sector. Otherwise report error and return.
+BIOS_READ_PROC_RET_ERR
 		POP D							; Restore registers
 		POP B
 		LHLD ORIGINAL_SP				; Restore original stack
@@ -578,6 +581,8 @@ BIOS_WRITE_PERFORM:
 		CALL MEMCOPY
 		; Buffer is updated with new sector data. Perform write.
         CALL CALC_CFLBA_FROM_PART_ADR
+        CPI 00H         ; If A=0, no valid LBA calculated
+        JZ BIOS_WRITE_RET_ERR ; Return and report error
 		LXI D, BLKDAT
 		CALL CFWSECT
 		CPI 00H			; Check result
@@ -753,6 +758,11 @@ CALC_CFLBA_LOOP_START
         INX H
         INX H
         JMP CALC_CFLBA_LOOP_START
+; Check if partition address is != 0
+        MOV D, H
+        MOV E, L
+        CALL ISZERO32BIT
+        JZ CALC_CFLBA_RET_ERR
 CALC_CFLBA_LOOP_END:       
         MOV B, M
         INX H
@@ -787,6 +797,10 @@ CALC_CFLBA_LOOP_END:
         STA CFLBA2
         MOV A, E
         STA CFLBA3
+        MVI A, 01H
+        RET
+CALC_CFLBA_RET_ERR
+        MVI A, 00H
         RET
 		
 	IF DEBUG > 0

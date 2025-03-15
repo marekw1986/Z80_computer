@@ -64,7 +64,7 @@ PUTS_LOOP:
 		INX H
 		JMP PUTS_LOOP
 
-; Checks if 32 variable pointed by DL is zero		
+; Checks if 32 variable pointed by DE is zero		
 ISZERO32BIT:
 		LDAX D
 		CPI 00H
