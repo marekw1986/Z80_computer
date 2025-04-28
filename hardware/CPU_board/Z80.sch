@@ -17131,6 +17131,7 @@ high speed (Philips)</description>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
 <part name="R16" library="rcl" deviceset="R-EU_" device="0204/5"/>
 <part name="R17" library="rcl" deviceset="R-EU_" device="R0603"/>
+<part name="GND10" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -17203,6 +17204,7 @@ high speed (Philips)</description>
 <instance part="GND9" gate="1" x="17.78" y="-60.96"/>
 <instance part="R16" gate="G$1" x="-111.76" y="25.4" rot="R90"/>
 <instance part="R17" gate="G$1" x="2.54" y="43.18" rot="R90"/>
+<instance part="GND10" gate="1" x="45.72" y="-119.38"/>
 </instances>
 <busses>
 </busses>
@@ -17614,6 +17616,12 @@ high speed (Philips)</description>
 <wire x1="25.4" y1="-53.34" x2="17.78" y2="-53.34" width="0.1524" layer="91"/>
 <wire x1="17.78" y1="-53.34" x2="17.78" y2="-58.42" width="0.1524" layer="91"/>
 <pinref part="GND9" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="IC3" gate="G$1" pin="OE/I8"/>
+<pinref part="GND10" gate="1" pin="GND"/>
+<wire x1="48.26" y1="-114.3" x2="45.72" y2="-114.3" width="0.1524" layer="91"/>
+<wire x1="45.72" y1="-114.3" x2="45.72" y2="-116.84" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="D0" class="0">
