@@ -1,5 +1,3 @@
-        include "variables.asm"
-
 CCP		EQU	0DC00H   ; was 2200H
 BDOS	EQU CCP+806H
 BIOS	EQU CCP+1600H
@@ -13,6 +11,8 @@ WB_SEC		EQU		(CCP/128)&03H						; first sector number
 
 DEBUG	EQU 0
 
+CR          EQU  0DH
+LF          EQU  0AH
 ;**************************************************************
 ;*
 ;*        B I O S   J U M P   T A B L E
@@ -958,9 +958,5 @@ BIOS_STACK
 
 	IF $ < BIOS_BOOT
 		error "BIOS rolled over memory!"
-	ENDIF
-	
-	IF $ >= SYSTEM_VARIABLES
-		error "Bios overwritten system variables!"
 	ENDIF
 		END
