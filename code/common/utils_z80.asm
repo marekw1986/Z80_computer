@@ -16,7 +16,7 @@ PETLA_DEL_WEWN:
         NOP
         NOP
         DEC B
-        JP Z, PETLA_DEL_WEWN                          
+        JP NZ, PETLA_DEL_WEWN                          
         DEC C
         RET Z
         JP DELAY        
@@ -170,21 +170,21 @@ CRC16_ARC_F:
         AND     A
 BLUR:   JP		PE, BLUR1
         SCF
-BLUR1:  RR		A
+BLUR1:  DB 01FH ;RAR
         AND     0E0H
-        RL		A
+        DB 017H ;RAL
         LD      B,A
-        RL		A
+        DB 017H ;RAL
         XOR     B
         XOR     H
         LD      B,A
         XOR     H
-        RR		A
+        DB 01FH ;RAR
         LD      A,L
-        RR		A
+        DB 01FH ;RAR
         LD	    L,A
         AND     A
-        RR		A
+        DB 01FH ;RAR
         XOR     L
         LD      L,B
         LD      H,A
