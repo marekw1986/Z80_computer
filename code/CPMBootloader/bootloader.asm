@@ -1,33 +1,7 @@
-;*************************************************************
-; 
-;                 TINY BASIC FOR INTEL 8080
-;                       VERSION 2.0
-;                     BY LI-CHEN WANG
-;                  MODIFIED AND TRANSLATED
-;                    TO INTEL MNEMONICS
-;                     BY ROGER RAUSKOLB
-;                      10 OCTOBER,1976
-;                        @COPYLEFT
-;                   ALL WRONGS RESERVED
-; 
-;*************************************************************
-; 
-; *** ZERO PAGE SUBROUTINES ***
-; 
-; THE 8080 INSTRUCTION SET LETS YOU HAVE 8 ROUTINES IN LOW
-; MEMORY THAT MAY BE CALLED BY RST N, N BEING 0 THROUGH 7.
-; THIS IS A ONE BYTE INSTRUCTION AND HAS THE SAME POWER AS
-; THE THREE BYTE INSTRUCTION CALL LLHH.  TINY BASIC WILL
-; USE RST 0 AS START AND RST 1 THROUGH RST 7 FOR
-; THE SEVEN MOST FREQUENTLY USED SUBROUTINES.
-; TWO OTHER SUBROUTINES (CRLF AND TSTNUM) ARE ALSO IN THIS
-; SECTION.  THEY CAN BE REACHED ONLY BY 3-BYTE CALLS.
-;
-
 IR_VECTORS_RAM EQU 0FFE0H
 STACK          EQU IR_VECTORS_RAM-1
 
-		INCL "../common/definitions.asm"
+		include "../common/definitions.asm"
 
         ORG  0000H
 START:  LXI  H,STACK                   ;*** COLD START ***
@@ -36,10 +10,10 @@ START:  LXI  H,STACK                   ;*** COLD START ***
         JMP  INIT
 ;
 
-		INCL "../common/cf.asm"
-		INCL "keyboard.asm"
-		INCL "../common/utils.asm"
-		INCL "../common/hexdump.asm"
+		include "../common/cf.asm"
+		;include "keyboard.asm"
+		include "../common/utils.asm"
+		include "../common/hexdump.asm"
 
         ;Set SYSTICK, RTCTICK and KBDDATA to 0x00
 INIT:   LXI  H, 0000H
@@ -217,10 +191,7 @@ JUMP_TO_CPM:
         DB 00H
         CALL NEWLINE
         JMP BIOS_ADDR
-        
-MSG1:   DB   'TINY '
-        DB   'BASIC'
-        DB   CR
+
 CFERRM: DB   'CF ERROR: '
         DB   CR
 STARTADDRSTR:
@@ -230,8 +201,8 @@ SIZESTR:
 		DB	 'Size: '
 		DB	 CR
 
-		INCL "fonts1.asm"
-		INCL "ps2_scancodes.asm"
+		include "fonts1.asm"
+		include "ps2_scancodes.asm"
         
 ;Interrupt vectors defined in rom
 IR_VECTORS_ROM:
@@ -345,7 +316,7 @@ RTC_ISR:
 		ORG	 0FBDFH
 SYSTEM_VARIABLES:
 BLKDAT: DS   512                        ;BUFFER FOR SECTOR TRANSFER
-BLKENDL DS   0                          ;BUFFER ENDS
+BLKENDL DS   1;0                          ;BUFFER ENDS
 CFLBA3	DS	 1
 CFLBA2	DS	 1
 CFLBA1	DS	 1

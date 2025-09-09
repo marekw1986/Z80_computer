@@ -4,9 +4,14 @@ STACK          EQU IR_VECTORS_RAM-1
 		include "../common/definitions.asm"
 
         ORG  0000H
-START:  LD   SP, STACK                   ;*** COLD START ***
-        LD   A, 0FFH
-        JP  INIT
+START:  LD   HL,STACK
+        LD   SP,HL
+        LD   A,0FFH
+        JP   INIT    
+        
+;START:  LD   SP, STACK                   ;*** COLD START ***
+;        LD   A, 0FFH
+;        JP  INIT
 ;
 
 		include "../common/cf_z80.asm"
