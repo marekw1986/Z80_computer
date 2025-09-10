@@ -3,16 +3,11 @@ STACK          EQU IR_VECTORS_RAM-1
 
 		include "../common/definitions.asm"
 
-        ORG  0000H
-START:  LD   HL,STACK
-        LD   SP,HL
-        LD   A,0FFH
-        JP   INIT    
-        
-;START:  LD   SP, STACK                   ;*** COLD START ***
-;        LD   A, 0FFH
-;        JP  INIT
-;
+        ORG  0000H    
+START:  LD   SP, STACK                   ;*** COLD START ***
+        LD   A, 0FFH
+        JP  INIT
+
 
 		include "../common/cf_z80.asm"
 		;include "keyboard.asm"
@@ -21,10 +16,9 @@ START:  LD   HL,STACK
 
         ;Set SYSTICK, RTCTICK and KBDDATA to 0x00
 INIT:   LD   HL, 0000H
-        LD (SYSTICK), HL
-        LD   HL, 0000H
-        LD  (RTCTICK), HL
-        LD   A, 00H
+        LD   (SYSTICK), HL
+        LD   (RTCTICK), HL
+        XOR A
         LD  (KBDDATA), A
         ;Initialize CTC
         LD   A, 05H      		; Control word: Timer mode, prescaler 16, enable TO output
@@ -78,7 +72,7 @@ INIT:   LD   HL, 0000H
         LD  BC, 32                       ;BYTES TO TRANSFER
         LD  DE, IR_VECTORS_ROM           ;SOURCE
         LD  HL, IR_VECTORS_RAM           ;DESTINATION
-        CALL MEMCOPY
+        LDIR
 
         ; Wait before initializing CF card
 		LD  C, 255
