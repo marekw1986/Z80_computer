@@ -43,8 +43,7 @@ BIOS_SECTRN: JMP      BIOS_SECTRN_PROC
 
 BIOS_BOOT_PROC:
 		DI
-		LD   HL,STACK
-        LD   SP,HL
+		LD   SP,STACK
 
         ; Turn on ROM shadowing
 		LD  A, 084H
@@ -52,17 +51,13 @@ BIOS_BOOT_PROC:
         NOP
         NOP
         
-        XOR A
         LD HL, 0000H
+        LD DE, 0001H
         LD BC, CCP
-ZERO_LOOP:
-        LD A, 00H
+        XOR A
         LD (HL), A
-        INC HL
-        DEC BC
-        LD A, B
-        OR C
-        JP NZ, ZERO_LOOP
+        LDIR
+
         CALL CFGETMBR
         CP 00H                     ; Check if MBR loaded properly
         JP Z, LD_PART_TABLE
@@ -137,8 +132,7 @@ BIOS_WBOOT_PROC:
 		DI
 		; We can't just blindly set SP=bios_stack here because disk_read can overwrite it!
 		; But we CAN set to use other areas that we KNOW are not currently in use!
-		LD HL, BIOS_WBOOT_STACK		; 
-		LD SP, HL
+		LD SP, BIOS_WBOOT_STACK		; 
 	IF DEBUG > 0
 	    PUSH AF
         PUSH BC
@@ -488,8 +482,9 @@ BIOS_READ_PROC_GET_SECT:
 	ENDIF
 		; Source addres in DE
 		LD HL, (DISK_DMA)	; Load target address to HL
+		EX DE, HL
 		LD BC, 0080H	; How many bytes?
-		CALL MEMCOPY
+		LDIR
 	IF 0 ;DEBUG > 0
 		PUSH DE
 		CALL IPUTS
@@ -581,10 +576,8 @@ BIOS_WRITE_E5_FILL_LOOP:
 BIOS_WRITE_PERFORM:
 		; Addres of sector in BLKDAT is now in DE
 		LD HL, (DISK_DMA)	; Load source address to HL
-		; Replace HL and DE. HL will now contain address od sector in BLKDAT and DE will store source from DISK_DMA
-		EX DE, HL
 		LD BC, 0080H	; How many bytes to copy?
-		CALL MEMCOPY
+		LDIR
 		; Buffer is updated with new sector data. Perform write.
         CALL CALC_CFLBA_FROM_PART_ADR
         CP 00H         ; If A=0, no valid LBA calculated
@@ -737,19 +730,19 @@ BIOS_SECTRN_PROC:
 ;        RET
 
 BIOS_CALC_SECT_IN_BUFFER:
-        LD A, (DISK_SECTOR)  ; Load sector number
-        LD E, A         ; Store in E (low byte)
-        LD D, 0         ; Clear D (high byte)
-        LD B, 7         ; Loop counter (7 shifts)
-CALC_SECTOR_SHIFT_LOOP:
-        LD A, E  
-        ADD A, A   ; Shift E left (×2)
-        LD E, A  
-        LD A, D  
-        ADC A, A   ; Shift D left with carry
-        LD D, A  
-        DEC B   ; Decrement counter
-        JP NZ, CALC_SECTOR_SHIFT_LOOP  ; Repeat until done		
+		LD A,(DISK_SECTOR)
+		LD L,A
+		LD H,0
+		ADD HL,HL   ; ×2
+		ADD HL,HL   ; ×4
+		ADD HL,HL   ; ×8
+		ADD HL,HL   ; ×16
+		ADD HL,HL   ; ×32
+		ADD HL,HL   ; ×64
+		ADD HL,HL   ; ×128
+		; HL = sector * 128
+		LD D,H
+		LD E,L	
 		RET
         
 CALC_CFLBA_FROM_PART_ADR:
@@ -758,11 +751,9 @@ CALC_CFLBA_FROM_PART_ADR:
 CALC_CFLBA_LOOP_START
         CP 00H
         JP Z, CALC_CFLBA_LOOP_END
-        DEC A
-        INC HL
-        INC HL
-        INC HL
-        INC HL
+		DEC A
+		LD DE,4
+		ADD HL,DE
         JP CALC_CFLBA_LOOP_START
 ; Check if partition address is != 0
         LD D, H
