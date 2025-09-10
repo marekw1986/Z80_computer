@@ -23,27 +23,27 @@ LF          EQU  0AH
 	IF $ != CCP+1600H
 		error "BIOS begins at wrong address!"
 	ENDIF	
-BIOS_BOOT:   JMP      BIOS_BOOT_PROC
-BIOS_WBOOT:  JMP      BIOS_WBOOT_PROC
-BIOS_CONST:  JMP      BIOS_CONST_PROC
-BIOS_CONIN:  JMP      BIOS_CONIN_PROC
-BIOS_CONOUT: JMP      BIOS_CONOUT_PROC
-BIOS_LIST:   JMP      BIOS_LIST_PROC
-BIOS_PUNCH:  JMP      BIOS_PUNCH_PROC
-BIOS_READER: JMP      BIOS_READER_PROC
-BIOS_HOME:   JMP      BIOS_HOME_PROC
-BIOS_SELDSK: JMP      BIOS_SELDSK_PROC
-BIOS_SETTRK: JMP      BIOS_SETTRK_PROC
-BIOS_SETSEC: JMP      BIOS_SETSEC_PROC
-BIOS_SETDMA: JMP      BIOS_SETDMA_PROC
-BIOS_READ:   JMP      BIOS_READ_PROC
-BIOS_WRITE:  JMP      BIOS_WRITE_PROC
-BIOS_PRSTAT: JMP      BIOS_PRSTAT_PROC
-BIOS_SECTRN: JMP      BIOS_SECTRN_PROC	
+BIOS_BOOT:   JP      BIOS_BOOT_PROC
+BIOS_WBOOT:  JP      BIOS_WBOOT_PROC
+BIOS_CONST:  JP      BIOS_CONST_PROC
+BIOS_CONIN:  JP      BIOS_CONIN_PROC
+BIOS_CONOUT: JP      BIOS_CONOUT_PROC
+BIOS_LIST:   JP      BIOS_LIST_PROC
+BIOS_PUNCH:  JP      BIOS_PUNCH_PROC
+BIOS_READER: JP      BIOS_READER_PROC
+BIOS_HOME:   JP      BIOS_HOME_PROC
+BIOS_SELDSK: JP      BIOS_SELDSK_PROC
+BIOS_SETTRK: JP      BIOS_SETTRK_PROC
+BIOS_SETSEC: JP      BIOS_SETSEC_PROC
+BIOS_SETDMA: JP      BIOS_SETDMA_PROC
+BIOS_READ:   JP      BIOS_READ_PROC
+BIOS_WRITE:  JP      BIOS_WRITE_PROC
+BIOS_PRSTAT: JP      BIOS_PRSTAT_PROC
+BIOS_SECTRN: JP      BIOS_SECTRN_PROC	
 
 BIOS_BOOT_PROC:
 		DI
-		LD   SP,STACK
+		LD SP, BIOS_STACK
 
         ; Turn on ROM shadowing
 		LD  A, 084H
@@ -126,7 +126,7 @@ CPM_CRC_LOOP:
 ;        LD A, B							;Move result of operation to A
 ;        CP 00H								;Check if OK
 ;        JP NZ, BIOS_TRYKBINIT						;Retry if not ok. TODO add limit of retries
-		JMP GOCPM
+		JP GOCPM
 	
 BIOS_WBOOT_PROC:
 		DI
@@ -566,7 +566,7 @@ BIOS_WRITE_NEW_TRACK
         LD BC, 384
 BIOS_WRITE_E5_FILL_LOOP:
         LD A, 0E5H
-        LD M, A
+        LD (HL), A
         INC HL
         DEC BC
         LD A, B
@@ -601,7 +601,7 @@ BIOS_WRITE_RET:
 		POP DE
 		POP BC	
 		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, H:
+		LD SP, HL
 		POP HL			; Restore original content of HL
 		RET
 		 
@@ -761,13 +761,13 @@ CALC_CFLBA_LOOP_START
         CALL ISZERO32BIT
         JP Z, CALC_CFLBA_RET_ERR
 CALC_CFLBA_LOOP_END:       
-        LD B, M
+        LD B, (HL)
         INC HL
-        LD C, M
+        LD C, (HL)
         INC HL
-        LD D, M
+        LD D, (HL)
         INC HL
-        LD E, M
+        LD E, (HL)
         LD HL, (DISK_TRACK)
         ; ADD lower 16 bits (HL + BC)
         LD A, L
@@ -874,10 +874,10 @@ PRINT_COLON:
 		RET
 	ENDIF
 
-        include "cf.asm"
-        include "utils.asm"
+        include "cf_z80.asm"
+        include "utils_z80.asm"
         include "../common/definitions.asm"
-        include "../common/hexdump.asm"
+        include "../common/hexdump_z80.asm"
 	
 LAST_CHAR		DB	00H		; Last ASCII character from keyboard	
 DISK_DISK:		DB	00H		; Should it be here?
