@@ -24,7 +24,7 @@ CFCHERR:
         IN	A, (CFREG1)
 		RET
 CFNERR:
-		LD A, 00H
+		XOR A
         RET    
             
 CFREAD:
@@ -92,7 +92,7 @@ CFRSECT_WITH_CACHE:
 		CP 00H							; If not, new LBA. Read imediately
 		JP Z, CFRSECT_WITH_CACHE_PERFORM
 		; We already have valid data in buffer. No need to read it again
-		LD A, 00H						; Store 0 in A to signalize no err
+		XOR A						; Store 0 in A to signalize no err
 		RET
 CFRSECT_WITH_CACHE_PERFORM:
 		CALL CFSLBA						;SET LBA
@@ -115,7 +115,7 @@ CFRSECT_WITH_CACHE_PERFORM:
 		RET
 CFRSECT_WITH_CACHE_BAD:
         PUSH AF
-        LD A, 00H
+        XOR A
         LD (CFVAL), A
         POP AF
 		RET
@@ -133,7 +133,7 @@ CFWSECT:
         RET
 
 CFGETMBR:
-		LD A, 00H
+		XOR A
 		OUT (CFREG3), A						;LBA 0
 		OUT (CFREG4), A						;LBA 1
 		OUT (CFREG5), A						;LBA 2

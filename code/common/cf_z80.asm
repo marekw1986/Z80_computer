@@ -1,11 +1,11 @@
 CFINIT:
-		LD A, 00H
+		XOR A
 		LD (CFLBA3), A
-		LD A, 00H
+		XOR A
 		LD (CFLBA2), A
-		LD A, 00H
+		XOR A
 		LD (CFLBA1), A
-		LD A, 00H
+		XOR A
 		LD (CFLBA0), A
         LD A, 04H
         OUT (CFREG7), A
@@ -43,7 +43,7 @@ CFWAIT_TMOUT_LOOP_INT:
         JP Z, CFWAIT_TMOUT_NOK
         JP CFWAIT_TMOUT_LOOP_EXT
 CFWAIT_TMOUT_OK:
-        LD A, 00H						;OK result
+        XOR A						;OK result
         RET
 CFWAIT_TMOUT_NOK:
 		LD A, 01H						;CF card timeout
@@ -56,7 +56,7 @@ CFCHERR:
         IN	A, (CFREG1)
 		RET
 CFNERR:
-		LD A, 00H
+		XOR A
         RET    
             
 CFREAD:
@@ -97,7 +97,7 @@ CFSLBA:
         RET
         
 CFGETMBR:
-		LD A, 00H
+		XOR A
 		OUT (CFREG3), A						;LBA 0
 		OUT (CFREG4), A						;LBA 1
 		OUT (CFREG5), A						;LBA 2

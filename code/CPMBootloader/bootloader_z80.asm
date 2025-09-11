@@ -35,7 +35,7 @@ INIT:   LD   HL, 0000H
         OUT (DART_A_CMD), A
         LD  A, 1          ; Register 1
         OUT (DART_A_CMD), A
-        LD  A, 00H       ; WAIT/READY disabled, TX and RX interrupts disabled
+        XOR A       ; WAIT/READY disabled, TX and RX interrupts disabled
         OUT (DART_A_CMD), A
         LD  A, 3         ; Register 3
         OUT (DART_A_CMD), A
@@ -54,7 +54,7 @@ INIT:   LD   HL, 0000H
         OUT (DART_B_CMD), A
         LD  A, 1          ; Register 1
         OUT (DART_B_CMD), A
-        LD  A, 00H       ; WAIT/READY disabled, TX and RX interrupts disabled
+        XOR A       ; WAIT/READY disabled, TX and RX interrupts disabled
         OUT (DART_B_CMD), A
         LD  A, 3         ; Register 3
         OUT (DART_B_CMD), A
@@ -298,7 +298,7 @@ RTC_ISR:
 		PUSH AF						;Save condition bits and accumulator
         PUSH HL
         PUSH DE
-        LD A, 00H                      ;Clear the RTC interrupt flag to change state of the line
+        XOR A                      ;Clear the RTC interrupt flag to change state of the line
         OUT (RTC_CTRLD_REG), A
         LD HL, (RTCTICK)                    ;Load RTCTICK variable to HL
         INC HL                           ;Increment HL

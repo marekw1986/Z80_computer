@@ -68,7 +68,7 @@ BIOS_BOOT_PROC:
 LD_PART_TABLE:
         CALL CFLDPARTADDR
 CFVAR_INIT:
-		LD A, 00H
+		XOR A
 		LD (CFLBA3), A
 		LD (CFLBA2), A
 		LD (CFLBA1), A
@@ -199,7 +199,7 @@ BIOS_WBOOT_SEC_OK:
 		POP HL
 		INC BC
 		CALL BIOS_SETTRK
-		LD A, 00H 			; sett A=0 for first sector on new track
+		XOR A 			; sett A=0 for first sector on new track
 BIOS_WBOOT_SEC:
 		LD B, 00H
 		LD C, A
@@ -588,7 +588,7 @@ BIOS_WRITE_PERFORM:
 		JP NZ, BIOS_WRITE_RET_ERR
 		JP BIOS_WRITE_RET_OK				
 BIOS_WRITE_RET_ERR:
-        LD A, 00H
+        XOR A
         LD (CFVAL), A
 		LD A, 1
 		JP BIOS_WRITE_RET
@@ -797,7 +797,7 @@ CALC_CFLBA_LOOP_END:
         LD A, 01H
         RET
 CALC_CFLBA_RET_ERR
-        LD A, 00H
+        XOR A
         RET
 		
 	IF DEBUG > 0
