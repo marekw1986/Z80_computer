@@ -4,10 +4,19 @@ all: bootloader.hex
 bootloader.hex: bootloader.asm
 	a85 bootloader.asm -l bootloader.lst -o bootloader.hex
 	
-bootloader_z80.bin: bootloader_z80.asm
+bootloader.p: bootloader.asm
+	asl -o bootloader.bin -L -OLIST bootloader.lst bootloader.asm -cpu 8080
+	
+bootloader.bin: bootloader.p
+	p2bin -l '$$00' bootloader.p bootloader.bin
+	
+bootloader_z80.p: bootloader_z80.asm
 	asl -o bootloader_z80.bin -L -OLIST bootloader_z80.lst bootloader_z80.asm -cpu z80
+	
+bootloader_z80.bin: bootloader_z80.p
+	p2bin -l '$$00' bootloader_z80.p bootloader_z80.bin
 
 clean:
-	$(RM) *.lst *.hex labels.asm *.bin
+	$(RM) *.lst *.hex labels.asm *.bin *.p
 
 distclean: clean
