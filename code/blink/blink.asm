@@ -38,7 +38,7 @@ INIT:
         OUT DART_A_CMD
         MVI A, 1          ; Register 1
         OUT DART_A_CMD
-        XOR A       ; WAIT/READY disabled, TX and RX interrupts disabled
+        MVI A, 00H       ; WAIT/READY disabled, TX and RX interrupts disabled
         OUT DART_A_CMD
         MVI A, 3         ; Register 3
         OUT DART_A_CMD
@@ -57,7 +57,7 @@ INIT:
         OUT DART_B_CMD
         MVI A, 1          ; Register 1
         OUT DART_B_CMD
-        XOR A       ; WAIT/READY disabled, TX and RX interrupts disabled
+        MVI A, 00H       ; WAIT/READY disabled, TX and RX interrupts disabled
         OUT DART_B_CMD
         MVI A, 3         ; Register 3
         OUT DART_B_CMD
