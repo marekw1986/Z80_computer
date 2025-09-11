@@ -57,7 +57,7 @@ PUTS_LOOP:
 		LD D, H
 		LD E, L
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET Z					; If a is zero, return
 		CALL OUT_CHAR
 		INC HL
@@ -66,19 +66,19 @@ PUTS_LOOP:
 ; Checks if 32 variable pointed by DL is zero		
 ISZERO32BIT:
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET NZ
 		INC DE
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET NZ
 		INC DE
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET NZ
 		INC DE
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET
 		
 ; CRC-16/ARC for 8080/Z80

@@ -2,7 +2,7 @@
 ;Beginning in DE
 HEXDUMP:
 	LD A, B
-	CP 00H
+	OR A
 	RET Z
 	LD A, (DE)				;Get byte
 	CALL HEXDUMP_A		;Print current byte as hex value

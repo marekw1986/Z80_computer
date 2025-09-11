@@ -17,7 +17,7 @@ CFINIT:
         LD A, 0EFH		                ;SET FEATURE COMMAND
         OUT (CFREG7), A
         CALL CFWAIT_TMOUT
-        CP 00H							;Check if wait loop timeouted
+        OR A							;Check if wait loop timeouted
         JP NZ, CFINIT_RET					;If so there is no point in checking error code
         CALL CFCHERR
 CFINIT_RET

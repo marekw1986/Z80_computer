@@ -59,7 +59,7 @@ BIOS_BOOT_PROC:
         LDIR
 
         CALL CFGETMBR
-        CP 00H                     ; Check if MBR loaded properly
+        OR A                     ; Check if MBR loaded properly
         JP Z, LD_PART_TABLE
         CALL IPUTS
         DB 'MBR load err. Reset required.'
@@ -424,7 +424,7 @@ BIOS_READ_PROC:
 		PUSH BC				; Now save remaining registers
 		PUSH DE
         CALL CALC_CFLBA_FROM_PART_ADR
-        CP 00H                            ; If 0 in A, no valid LBA calculated
+        OR A                            ; If 0 in A, no valid LBA calculated
         JP Z, BIOS_READ_PROC_RET_ERR          ; In that case return and report error
 		CALL CFRSECT_WITH_CACHE
 	IF DEBUG > 0
@@ -439,7 +439,7 @@ BIOS_READ_PROC:
 		POP AF
 	ENDIF
 		; If no error there should be 0 in A
-		CP 00H
+		OR A
 		JP Z, BIOS_READ_PROC_GET_SECT		; No error, just read sector. Otherwise report error and return.
         JP BIOS_READ_PROC_RET_ERR		; Return
 BIOS_READ_PROC_GET_SECT:
@@ -543,7 +543,7 @@ BIOS_WRITE_PROC:
         JP Z, BIOS_WRITE_NEW_TRACK
 		; First read sector to have complete data in buffer
 		CALL CFRSECT_WITH_CACHE
-		CP 00H
+		OR A
 		JP NZ, BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
 		CALL BIOS_CALC_SECT_IN_BUFFER
 		; Now DE contains the 16-bit result of multiplying the original value by 128
@@ -580,11 +580,11 @@ BIOS_WRITE_PERFORM:
 		LDIR
 		; Buffer is updated with new sector data. Perform write.
         CALL CALC_CFLBA_FROM_PART_ADR
-        CP 00H         ; If A=0, no valid LBA calculated
+        OR A         ; If A=0, no valid LBA calculated
         JP Z, BIOS_WRITE_RET_ERR ; Return and report error
 		LD DE, BLKDAT
 		CALL CFWSECT
-		CP 00H			; Check result
+		OR A			; Check result
 		JP NZ, BIOS_WRITE_RET_ERR
 		JP BIOS_WRITE_RET_OK				
 BIOS_WRITE_RET_ERR:
@@ -749,7 +749,7 @@ CALC_CFLBA_FROM_PART_ADR:
         LD HL, PARTADDR
         LD A, (DISK_DISK)
 CALC_CFLBA_LOOP_START
-        CP 00H
+        OR A
         JP Z, CALC_CFLBA_LOOP_END
 		DEC A
 		LD DE,4

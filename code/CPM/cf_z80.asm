@@ -84,12 +84,12 @@ CFRSECT:
 ; Destination address is BLKDAT     
 CFRSECT_WITH_CACHE:
 		LD A, (CFVAL)						; Check if we have valid data in buffer
-		CP 00H
+		OR A
 		JP Z, CFRSECT_WITH_CACHE_PERFORM  ; If not, read
 		LD HL, CFLBA3					; Check if old and new LBA values are equal
 		LD DE, PCFLBA3
 		CALL IS32BIT_EQUAL
-		CP 00H							; If not, new LBA. Read imediately
+		OR A							; If not, new LBA. Read imediately
 		JP Z, CFRSECT_WITH_CACHE_PERFORM
 		; We already have valid data in buffer. No need to read it again
 		XOR A						; Store 0 in A to signalize no err
@@ -104,7 +104,7 @@ CFRSECT_WITH_CACHE_PERFORM:
 		LD	DE, BLKDAT
 		CALL CFREAD
 		CALL CFCHERR
-		CP 00H							; If A=0, no error, good read
+		OR A							; If A=0, no error, good read
 		JP NZ, CFRSECT_WITH_CACHE_BAD
 		PUSH AF
 		LD A, 01H
