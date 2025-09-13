@@ -195,7 +195,7 @@ BIOS_CONIN_PROC:
         IN   A, (DART_A_CMD)
         NOP
         AND  RxRDY_MASK
-        JP Z, BIOS_CONIN_PROC
+        JR Z, BIOS_CONIN_PROC
         IN   A, (DART_A_DATA)
 		RET
 	
@@ -225,65 +225,17 @@ BIOS_READER_PROC:
 		RET
 		
 BIOS_HOME_PROC:
-	IF DEBUG > 0
-		PUSH HL				; Save content  of HL on original stack, then switch to bios stack
-		LD HL, 0000H
-		ADD HL,SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD SP, BIOS_STACK
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'HOME procedure entered'
-		DB CR
-		DB 00H
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF
 		LD BC, 0000H
 		;FALL INTO BIOS_SETTRK_PROC!!!
 		
 BIOS_SETTRK_PROC:
-		PUSH HL
-		LD L, C
-		LD H, B
-		LD (DISK_TRACK), HL
-		POP HL
-	IF DEBUG > 1
-		PUSH HL				; Save content  of HL on original stack, then switch to bios stack
-		LD HL, 0000H
-		ADD HL, SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD SP, BIOS_STACK
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'SETTRK procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF		
+		LD (DISK_TRACK), BC
 		RET
 		  
 BIOS_SELDSK_PROC:
 		LD A, C
         CP 04H     ; Only four partitions supported
-        JP NC, BIOS_SELDSK_PROC_WRNDSK
+        JR NC, BIOS_SELDSK_PROC_WRNDSK
         LD (DISK_DISK), A
 		LD HL, DISKA_DPH	
 		RET
@@ -292,63 +244,11 @@ BIOS_SELDSK_PROC_WRNDSK:
         RET
 		
 BIOS_SETSEC_PROC:
-		PUSH HL
-		LD L, C
-		LD H, B
-		LD (DISK_SECTOR), HL
-		POP HL	
-	IF DEBUG > 1
-		PUSH HL				; Save content  of HL on original stack, then switch to bios stack
-		LD HL, 0000H
-		ADD HL, SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD SP, BIOS_STACK
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'SETSEC procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF		
+		LD (DISK_SECTOR), BC	
 		RET
 		
 BIOS_SETDMA_PROC:
-		PUSH HL
-		LD L, C
-		LD H, B
-		LD (DISK_DMA), HL
-		POP HL
-	IF DEBUG > 1		
-		PUSH HL				; Save content  of HL on original stack
-		LD HL, 0000H		; then switch to bios stack
-		ADD HL, SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD SP, BIOS_STACK	
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'SETDMA procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF
+		LD (DISK_DMA), BC
 		RET
 		
 BIOS_READ_PROC:
