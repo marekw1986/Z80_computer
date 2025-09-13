@@ -280,7 +280,7 @@ BIOS_READ_PROC_GET_SECT:
 		LDIR
 BIOS_READ_PROC_RET_ERR
         LD A, 1
-        JP BIOS_READ_PROC_RET
+        JR BIOS_READ_PROC_RET
 BIOS_READ_PROC_RET_OK    
         LD A, 0
 BIOS_READ_PROC_RET
@@ -289,7 +289,7 @@ BIOS_READ_PROC_RET
 		LD HL, (ORIGINAL_SP); Restore original stack
 		LD SP, HL
 		POP HL			; Restore original content of HL
-		LD A, 0
+		LD A, 0         ; TODO: fix it!!!!
 		RET
 		  
 BIOS_WRITE_PROC:
@@ -298,42 +298,23 @@ BIOS_WRITE_PROC:
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
 		LD SP, BIOS_STACK
-		
-	IF DEBUG > 0
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'WRITE procedure entered'
-		DB CR
-		DB 00H
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
 		PUSH BC				; Now save remaining registers
 		PUSH DE
         ; Check content of C - deblocking code
         LD A, C
         CP 2               ; Is it first sector of new track?
-        JP Z, BIOS_WRITE_NEW_TRACK
+        JR Z, BIOS_WRITE_NEW_TRACK
 		; First read sector to have complete data in buffer
 		CALL CFRSECT_WITH_CACHE
 		OR A
-		JP NZ, BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
+		JR NZ, BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
 		CALL BIOS_CALC_SECT_IN_BUFFER
 		; Now DE contains the 16-bit result of multiplying the original value by 128
 		; D holds the high byte and E holds the low byte of the result
 		; Calculate the address of the CP/M sector in the BLKDAT
 		LD HL, BLKDAT
-		LD A, E
-		ADD A, L
-		LD E, A
-		LD A, D
-		ADC A, H
-		LD D, A
+		ADD HL, DE
+        EX HL, DE
         JP BIOS_WRITE_PERFORM
         ; No need to calculate sector location in BLKDAT.
         ; Thanks to deblocking code = 2 we know it is first secor of new track
@@ -355,9 +336,8 @@ BIOS_WRITE_PERFORM:
 		; Addres of sector in BLKDAT is now in DE
 		LD HL, (DISK_DMA)	; Load source address to HL
 		; Replace HL and DE. HL will now contain address od sector in BLKDAT and DE will store source from DISK_DMA
-		EX DE, HL
 		LD BC, 0080H	; How many bytes to copy?
-		CALL MEMCOPY
+		LDIR
 		; Buffer is updated with new sector data. Perform write.
         CALL CALC_CFLBA_FROM_PART_ADR
         OR A         ; If A=0, no valid LBA calculated
