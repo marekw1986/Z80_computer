@@ -51,17 +51,12 @@ BIOS_BOOT_PROC:
         NOP
         NOP
         
-        XOR A
         LD HL, 0000H
-        LD BC, CCP
-ZERO_LOOP:
-        XOR A
-        LD (HL), A
-        INC HL
-        DEC BC
-        LD A, B
-        OR C
-        JP NZ, ZERO_LOOP
+        LD (HL), 00H
+        LD DE, 0001H
+        LD BC, CCP-1
+        LDIR
+        
         CALL CFGETMBR
         OR A                     ; Check if MBR loaded properly
         JP Z, LD_PART_TABLE
@@ -315,22 +310,18 @@ BIOS_WRITE_PROC:
 		LD HL, BLKDAT
 		ADD HL, DE
         EX HL, DE
-        JP BIOS_WRITE_PERFORM
+        JR BIOS_WRITE_PERFORM
         ; No need to calculate sector location in BLKDAT.
         ; Thanks to deblocking code = 2 we know it is first secor of new track
         ; Just fill remaining bytes of buffer with 0xE5 and copy secotr to the
         ; beginning of BLKDAT. Then write.
 BIOS_WRITE_NEW_TRACK
         LD HL, BLKDAT+128
-        LD BC, 384
-BIOS_WRITE_E5_FILL_LOOP:
-        LD A, 0E5H
-        LD (HL), A
-        INC HL
-        DEC BC
-        LD A, B
-        OR C
-        JP NZ, BIOS_WRITE_E5_FILL_LOOP
+        LD (HL), 0E5H
+        LD DE, BLKDAT+128+1
+        LD BC, 384-1
+        LDIR
+
         LD DE, BLKDAT
 BIOS_WRITE_PERFORM:
 		; Addres of sector in BLKDAT is now in DE
@@ -341,17 +332,17 @@ BIOS_WRITE_PERFORM:
 		; Buffer is updated with new sector data. Perform write.
         CALL CALC_CFLBA_FROM_PART_ADR
         OR A         ; If A=0, no valid LBA calculated
-        JP Z, BIOS_WRITE_RET_ERR ; Return and report error
+        JR Z, BIOS_WRITE_RET_ERR ; Return and report error
 		LD DE, BLKDAT
 		CALL CFWSECT
 		OR A			; Check result
-		JP NZ, BIOS_WRITE_RET_ERR
-		JP BIOS_WRITE_RET_OK				
+		JR NZ, BIOS_WRITE_RET_ERR
+		JR BIOS_WRITE_RET_OK				
 BIOS_WRITE_RET_ERR:
         XOR A
         LD (CFVAL), A
 		LD A, 1
-		JP BIOS_WRITE_RET
+		JR BIOS_WRITE_RET
 BIOS_WRITE_RET_OK:
         LD A, 01H
         LD (CFVAL), A
