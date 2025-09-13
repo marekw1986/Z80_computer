@@ -43,8 +43,7 @@ BIOS_SECTRN: JP      BIOS_SECTRN_PROC
 
 BIOS_BOOT_PROC:
 		DI
-		LD HL, BIOS_STACK
-        LD SP, HL
+		LD SP, BIOS_STACK
 
         ; Turn on ROM shadowing
 		LD  A, 084H
@@ -137,8 +136,7 @@ BIOS_WBOOT_PROC:
 		DI
 		; We can't just blindly set SP=bios_stack here because disk_read can overwrite it!
 		; But we CAN set to use other areas that we KNOW are not currently in use!
-		LD HL, BIOS_WBOOT_STACK		;
-        LD SP, HL 
+		LD SP, BIOS_WBOOT_STACK		;
 	IF DEBUG > 0
 	    PUSH AF
         PUSH BC
@@ -254,8 +252,7 @@ BIOS_CONOUT_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL
+		LD SP, BIOS_STACK
 		PUSH AF
 		LD A, C			; Save A on BIOS stack
 		CALL OUT_CHAR
@@ -281,8 +278,7 @@ BIOS_HOME_PROC:
 		LD HL, 0000H
 		ADD HL,SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL
+		LD SP, BIOS_STACK
         PUSH AF
         PUSH BC
 		PUSH DE
@@ -313,8 +309,7 @@ BIOS_SETTRK_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL	
+		LD SP, BIOS_STACK
         PUSH AF
         PUSH BC
 		PUSH DE
@@ -355,8 +350,7 @@ BIOS_SETSEC_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL
+		LD SP, BIOS_STACK
         PUSH AF
         PUSH BC
 		PUSH DE
@@ -386,8 +380,7 @@ BIOS_SETDMA_PROC:
 		LD HL, 0000H		; then switch to bios stack
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL				; Bios stack set. 		
+		LD SP, BIOS_STACK	
         PUSH AF
         PUSH BC
 		PUSH DE
@@ -411,8 +404,7 @@ BIOS_READ_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL				; Bios stack set. 	
+		LD SP, BIOS_STACK
 	IF DEBUG > 0
         PUSH AF
         PUSH BC
@@ -523,8 +515,7 @@ BIOS_WRITE_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL				; Bios stack set. 
+		LD SP, BIOS_STACK
 		
 	IF DEBUG > 0
         PUSH AF
@@ -625,8 +616,7 @@ BIOS_SECTRN_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL				; Bios stack set. 
+		LD SP, BIOS_STACK
         PUSH AF
         PUSH BC
 		PUSH DE
