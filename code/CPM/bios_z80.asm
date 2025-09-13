@@ -82,20 +82,6 @@ CFVAR_INIT:
 		LD (PCFLBA1), A
 		LD (PCFLBA0), A
 		LD (CFVAL), A
-	IF DEBUG > 0
-	    PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'Cold boot procedure entered'
-		DB CR
-		DB 00H
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
 		CALL IPUTS
 		DB 'Running CP/M 2.2'
 		DB CR
@@ -125,11 +111,6 @@ CPM_CRC_LOOP:
 		XOR A
 		LD (IOBYTE), A
 		LD (CDISK), A
-;BIOS_TRYKBINIT:								;Reinitialize keyboard
-;        CALL BIOS_KBDINIT                        ;Call init routine
-;        LD A, B							;Move result of operation to A
-;        CP 00H								;Check if OK
-;        JP NZ, BIOS_TRYKBINIT						;Retry if not ok. TODO add limit of retries
 		JP GOCPM
 	
 BIOS_WBOOT_PROC:
@@ -137,27 +118,6 @@ BIOS_WBOOT_PROC:
 		; We can't just blindly set SP=bios_stack here because disk_read can overwrite it!
 		; But we CAN set to use other areas that we KNOW are not currently in use!
 		LD SP, BIOS_WBOOT_STACK		;
-	IF DEBUG > 0
-	    PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'WBOOT procedure entered'
-		DB CR
-		DB 00H
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
-	IF 0
-		CALL IPUTS
-		DB 'Wboot not implemented!'
-		DB CR
-        DB 00H
-        JP $
-    ENDIF
 		LD C, 0
 		CALL BIOS_SELDSK
 		LD BC, WB_TRK
@@ -171,7 +131,7 @@ BIOS_WBOOT_LOOP:
 		PUSH BC	; Save remaining sector count
 		CALL BIOS_READ
 		OR A
-		JP Z, BIOS_WBOOT_SEC_OK
+		JR Z, BIOS_WBOOT_SEC_OK
 		CALL IPUTS
 		DB 'ERROR: WBOOT FAILED. HALTING.'
 		DB CR
@@ -182,26 +142,18 @@ BIOS_WBOOT_LOOP:
 BIOS_WBOOT_SEC_OK:
 		; Advance the DMA pointer by 128 bytes
 		LD HL, (DISK_DMA)	; HL = last used DMA address
-		LD A, L
-		ADD A, 80H
-		LD L, A
-		LD A, H
-		ADC A, 00H
-		LD H, A
-		LD B, H
-		LD C, L	; BC = HL
+		LD DE, 128
+        ADD HL, DE          ; HL += 128
+        LD B, H
+        LD C, L             ; BC = HL
 		CALL BIOS_SETDMA
 		LD A, (DISK_SECTOR)		; A = last used sector number (low byte only for 0..3)
 		INC A
 		AND 03H				; if A+1 = 4 then A=0
-		JP NZ, BIOS_WBOOT_SEC	; if A+1 !=4 then do not advance the track number
+		JR NZ, BIOS_WBOOT_SEC	; if A+1 !=4 then do not advance the track number
 		; Advance to the next track
-		PUSH HL
-		LD HL, (DISK_TRACK)
-		LD B, H
-		LD C, L
-		POP HL
-		INC BC
+        LD BC, (DISK_TRACK)
+        INC BC
 		CALL BIOS_SETTRK
 		XOR A 			; sett A=0 for first sector on new track
 BIOS_WBOOT_SEC:
@@ -212,7 +164,7 @@ BIOS_WBOOT_SEC:
 		DEC BC				; BC--
 		LD A, B
 		OR C
-		JP NZ, BIOS_WBOOT_LOOP
+		JR NZ, BIOS_WBOOT_LOOP
 		; Fall through into GOCPM
 GOCPM:
 		LD A, 0C3H ;C3 is a jump instruction
