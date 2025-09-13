@@ -257,41 +257,16 @@ BIOS_READ_PROC:
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
 		LD SP, BIOS_STACK
-	IF DEBUG > 0
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'READ procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
 		PUSH BC				; Now save remaining registers
 		PUSH DE
         CALL CALC_CFLBA_FROM_PART_ADR
         OR A                            ; If 0 in A, no valid LBA calculated
-        JP Z, BIOS_READ_PROC_RET_ERR          ; In that case return and report error
+        JR Z, BIOS_READ_PROC_RET_ERR          ; In that case return and report error
 		CALL CFRSECT_WITH_CACHE
-	IF DEBUG > 0
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL PRINT_CFLBA_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
 		; If no error there should be 0 in A
 		OR A
-		JP Z, BIOS_READ_PROC_GET_SECT		; No error, just read sector. Otherwise report error and return.
-        JP BIOS_READ_PROC_RET_ERR		; Return
+		JR Z, BIOS_READ_PROC_GET_SECT		; No error, just read sector. Otherwise report error and return.
+        JR BIOS_READ_PROC_RET_ERR		; Return
 BIOS_READ_PROC_GET_SECT:
         CALL BIOS_CALC_SECT_IN_BUFFER
 		; Now DE contains the 16-bit result of multiplying the original value by 128
@@ -304,50 +279,10 @@ BIOS_READ_PROC_GET_SECT:
 		LD A, D
 		ADC A, H
 		LD D, A
-	IF DEBUG > 1
-		PUSH DE	; Store DE (source address) in stack
-		CALL IPUTS
-		DB 'Calculated source address in CF bufffer = 0x'
-		DB 00H
-		POP DE	; Retrieve DE (source address)
-		LD A, D
-		CALL HEXDUMP_A
-		LD A, E
-		CALL HEXDUMP_A
-		LD A, CR
-		CALL OUT_CHAR
-	IF 0
-		PUSH DE
-		CALL IPUTS
-		DB 'Buffer before copy: '
-		DB 00H
-		POP DE
-		PUSH DE
-		LD B, 80H
-		CALL HEXDUMP
-		LD A, CR
-		CALL OUT_CHAR
-		POP DE
-	ENDIF
-	ENDIF
 		; Source addres in DE
 		LD HL, (DISK_DMA)	; Load target address to HL
 		LD BC, 0080H	; How many bytes?
 		CALL MEMCOPY
-	IF 0 ;DEBUG > 0
-		PUSH DE
-		CALL IPUTS
-		DB 'Buffer after copy: '
-		DB 00H		
-		POP DE
-		LD HL, (DISK_DMA)
-		LD D, H
-		LD E, L
-		LD B, 80H
-		CALL HEXDUMP
-		LD A, CR
-		CALL OUT_CHAR
-	ENDIF
 BIOS_READ_PROC_RET_ERR
         LD A, 1
         JP BIOS_READ_PROC_RET
