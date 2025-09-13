@@ -8,22 +8,7 @@ OUT_CHAR_WAIT:
         JP Z, OUT_CHAR_WAIT              ;NOT READY, WAIT
         POP  AF                        ;READY, GET OLD A BACK
         OUT  (DART_A_DATA), A                ;AND SEND IT OUT
-		RET        
-
-MEMCOPY:
-        LD A, B                        ;Copy register B to register A
-        OR C                           ;Bitwise OR of register A and register C into register A
-        RET Z                              ;Return if the zero-flag is set high.
-MC_LOOP:
-        LD A, (DE)                          ;Load A from the address pointed by DE
-        LD (HL), A                        ;Store A into the address pointed by HL
-        INC DE                           ;Increment DE
-        INC HL                           ;Increment HL
-        DEC BC                           ;Decrement BC   (does not affect Flags)
-        LD A, B                        ;Copy B to A    (so as to compare BC with zero)
-        OR C                           ;A = A | C      (set zero)
-        JP NZ, MC_LOOP                     ;Jump to 'loop:' if the zero-flag is not set.   
-        RET                             ;Return
+		RET
 
 NEWLINE:
 		LD A, 0DH
@@ -81,37 +66,31 @@ ISZERO32BIT:
 		OR A
 		RET
 		
-; CRC-16/ARC for 8080/Z80
+; CRC-16/ARC for Z80 only
 ; On entry HL = old CRC, A = byte
 ; On exit HL = new CRC, A,B undefined
 CRC16_ARC_F:
-        XOR		L
-        LD      L,A
-        RRCA
-        RRCA
-        JP 		PO, BLUR
-        AND     A
-BLUR:   JP		PE, BLUR1
-        SCF
-BLUR1:  DB 01FH ;RAR
-        AND     0E0H
-        DB 017H ;RAL
-        LD      B,A
-        DB 017H ;RAL
-        XOR     B
-        XOR     H
-        LD      B,A
-        XOR     H
-        DB 01FH ;RAR
-        LD      A,L
-        DB 01FH ;RAR
-        LD	    L,A
-        AND     A
-        DB 01FH ;RAR
-        XOR     L
-        LD      L,B
-        LD      H,A
-        RET
+        LD      B,0             
+        XOR     L               
+        JP      PO,BLUR80       
+        AND     A               
+BLUR80: JP      PE,BLUR81       
+        SCF                     
+BLUR81: RRA                     
+        RR      B               
+        LD      L,A             
+        SRL     A               
+        RR      B               
+        XOR     L               
+        LD      L,A             
+        ADD     A,A             
+        LD      A,B             
+        RLA                     
+        XOR     B               
+        XOR     H               
+        LD      H,L             
+        LD      L,A             
+        RET                     
         
 ; Checks if 32bit values pointed by HL and DE are equal        
 IS32BIT_EQUAL:
