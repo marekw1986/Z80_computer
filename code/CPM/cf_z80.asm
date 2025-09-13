@@ -74,7 +74,6 @@ CFRSECT:
 		CALL CFWAIT
 		LD A, 20H						;READ SECTOR COMMAND
 		OUT	(CFREG7), A
-		;LD	DE, LOAD_BASE
 		CALL CFREAD
 		CALL CFCHERR
 		RET
@@ -127,7 +126,6 @@ CFWSECT:
         CALL CFWAIT
         LD A, 30H                      ;WRITE SECTOR COMMAND
         OUT (CFREG7), A
-        LD DE, LOAD_BASE
         CALL CFWRITE
         CALL CFCHERR
         RET

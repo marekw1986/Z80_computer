@@ -43,7 +43,8 @@ BIOS_SECTRN: JP      BIOS_SECTRN_PROC
 
 BIOS_BOOT_PROC:
 		DI
-		LD SP, BIOS_STACK
+		LD HL, BIOS_STACK
+        LD SP, HL
 
         ; Turn on ROM shadowing
 		LD  A, 084H
@@ -51,13 +52,17 @@ BIOS_BOOT_PROC:
         NOP
         NOP
         
+        XOR A
         LD HL, 0000H
-        LD DE, 0001H
         LD BC, CCP
+ZERO_LOOP:
         XOR A
         LD (HL), A
-        LDIR
-
+        INC HL
+        DEC BC
+        LD A, B
+        OR C
+        JP NZ, ZERO_LOOP
         CALL CFGETMBR
         OR A                     ; Check if MBR loaded properly
         JP Z, LD_PART_TABLE
@@ -132,7 +137,8 @@ BIOS_WBOOT_PROC:
 		DI
 		; We can't just blindly set SP=bios_stack here because disk_read can overwrite it!
 		; But we CAN set to use other areas that we KNOW are not currently in use!
-		LD SP, BIOS_WBOOT_STACK		; 
+		LD HL, BIOS_WBOOT_STACK		;
+        LD SP, HL 
 	IF DEBUG > 0
 	    PUSH AF
         PUSH BC
@@ -405,7 +411,7 @@ BIOS_READ_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, (BIOS_STACK)
+		LD HL, BIOS_STACK
 		LD SP, HL				; Bios stack set. 	
 	IF DEBUG > 0
         PUSH AF
@@ -482,9 +488,8 @@ BIOS_READ_PROC_GET_SECT:
 	ENDIF
 		; Source addres in DE
 		LD HL, (DISK_DMA)	; Load target address to HL
-		EX DE, HL
 		LD BC, 0080H	; How many bytes?
-		LDIR
+		CALL MEMCOPY
 	IF 0 ;DEBUG > 0
 		PUSH DE
 		CALL IPUTS
@@ -576,8 +581,10 @@ BIOS_WRITE_E5_FILL_LOOP:
 BIOS_WRITE_PERFORM:
 		; Addres of sector in BLKDAT is now in DE
 		LD HL, (DISK_DMA)	; Load source address to HL
+		; Replace HL and DE. HL will now contain address od sector in BLKDAT and DE will store source from DISK_DMA
+		EX DE, HL
 		LD BC, 0080H	; How many bytes to copy?
-		LDIR
+		CALL MEMCOPY
 		; Buffer is updated with new sector data. Perform write.
         CALL CALC_CFLBA_FROM_PART_ADR
         OR A         ; If A=0, no valid LBA calculated
@@ -730,19 +737,19 @@ BIOS_SECTRN_PROC:
 ;        RET
 
 BIOS_CALC_SECT_IN_BUFFER:
-		LD A,(DISK_SECTOR)
-		LD L,A
-		LD H,0
-		ADD HL,HL   ; ×2
-		ADD HL,HL   ; ×4
-		ADD HL,HL   ; ×8
-		ADD HL,HL   ; ×16
-		ADD HL,HL   ; ×32
-		ADD HL,HL   ; ×64
-		ADD HL,HL   ; ×128
-		; HL = sector * 128
-		LD D,H
-		LD E,L	
+        LD A, (DISK_SECTOR)  ; Load sector number
+        LD E, A         ; Store in E (low byte)
+        LD D, 0         ; Clear D (high byte)
+        LD B, 7         ; Loop counter (7 shifts)
+CALC_SECTOR_SHIFT_LOOP:
+        LD A, E  
+        ADD A, A   ; Shift E left (×2)
+        LD E, A  
+        LD A, D  
+        ADC A, A   ; Shift D left with carry
+        LD D, A  
+        DEC B   ; Decrement counter
+        JP NZ, CALC_SECTOR_SHIFT_LOOP  ; Repeat until done		
 		RET
         
 CALC_CFLBA_FROM_PART_ADR:
@@ -751,9 +758,11 @@ CALC_CFLBA_FROM_PART_ADR:
 CALC_CFLBA_LOOP_START
         OR A
         JP Z, CALC_CFLBA_LOOP_END
-		DEC A
-		LD DE,4
-		ADD HL,DE
+        DEC A
+        INC HL
+        INC HL
+        INC HL
+        INC HL
         JP CALC_CFLBA_LOOP_START
 ; Check if partition address is != 0
         LD D, H
@@ -770,21 +779,21 @@ CALC_CFLBA_LOOP_END:
         LD E, (HL)
         LD HL, (DISK_TRACK)
         ; ADD lower 16 bits (HL + BC)
-        LD A, L
-        ADD A, B            ; A = L + B
-        LD B, A         ; Store result in C
-        LD A, H
-        ADC A, C            ; A = H + C + Carry
-        LD C, A         ; Store result in B
+        LD   A, L
+        ADD  A, B            ; A = L + B
+        LD   B, A         ; Store result in C
+        LD   A, H
+        ADC  A, C            ; A = H + C + Carry
+        LD   C, A         ; Store result in B
         ; ADD upper 16 bits (DE + Carry)
-        LD A, D
-        LD D, 00H
-        ADC A, D             ; D = D + Carry
-        LD D, A
-        LD A, E
-        LD E, 00H
-        ADC A, E             ; E = E + Carry
-        LD E, A
+        LD   A, D
+        LD   D, 00H
+        ADC  A, D             ; D = D + Carry
+        LD   D, A
+        LD   A, E
+        LD   E, 00H
+        ADC  A, E             ; E = E + Carry
+        LD   E, A
         ; Store the result back at LBA        
         LD A, B
         LD (CFLBA0), A
