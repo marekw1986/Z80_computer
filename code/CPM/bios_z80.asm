@@ -273,16 +273,11 @@ BIOS_READ_PROC_GET_SECT:
 		; D holds the high byte and E holds the low byte of the result
 		; Calculate the address of the CP/M sector in the BLKDAT
 		LD HL, BLKDAT
-		LD A, E
-		ADD A, L
-		LD E, A
-		LD A, D
-		ADC A, H
-		LD D, A
+		ADD HL, DE
 		; Source addres in DE
-		LD HL, (DISK_DMA)	; Load target address to HL
+		LD DE, (DISK_DMA)	; Load target address to HL
 		LD BC, 0080H	; How many bytes?
-		CALL MEMCOPY
+		LDIR
 BIOS_READ_PROC_RET_ERR
         LD A, 1
         JP BIOS_READ_PROC_RET
@@ -397,29 +392,7 @@ BIOS_PRSTAT_PROC:
 BIOS_SECTRN_PROC:
 		; 1:1 translation (no skew factor)
 		LD H, B
-		LD L, C
-	IF DEBUG > 1
-		PUSH HL				; Save content  of HL on original stack, then switch to bios stack
-		LD HL, 0000H
-		ADD HL, SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD SP, BIOS_STACK
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'SECTRN procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF		
+		LD L, C	
 		RET
 		
 ;KBDINIT - initializes 8042/8242 PS/2 keyboard controller
@@ -513,21 +486,30 @@ BIOS_SECTRN_PROC:
 ;        MVI B, 00H					;Return result code
 ;        RET
 
+;BIOS_CALC_SECT_IN_BUFFER:
+;        LD A, (DISK_SECTOR)  ; Load sector number
+;        LD E, A         ; Store in E (low byte)
+;        LD D, 0         ; Clear D (high byte)
+;        LD B, 7         ; Loop counter (7 shifts)
+;CALC_SECTOR_SHIFT_LOOP:
+;        LD A, E  
+;        ADD A, A   ; Shift E left (×2)
+;        LD E, A  
+;        LD A, D  
+;        ADC A, A   ; Shift D left with carry
+;        LD D, A  
+;        DEC B   ; Decrement counter
+;        JP NZ, CALC_SECTOR_SHIFT_LOOP  ; Repeat until done
+;		RET
+
 BIOS_CALC_SECT_IN_BUFFER:
-        LD A, (DISK_SECTOR)  ; Load sector number
-        LD E, A         ; Store in E (low byte)
-        LD D, 0         ; Clear D (high byte)
-        LD B, 7         ; Loop counter (7 shifts)
-CALC_SECTOR_SHIFT_LOOP:
-        LD A, E  
-        ADD A, A   ; Shift E left (×2)
-        LD E, A  
-        LD A, D  
-        ADC A, A   ; Shift D left with carry
-        LD D, A  
-        DEC B   ; Decrement counter
-        JP NZ, CALC_SECTOR_SHIFT_LOOP  ; Repeat until done		
-		RET
+        XOR A
+        LD E, A
+        LD A, (DISK_SECTOR)
+        RRA
+        RR E
+        LD D, A
+        RET
         
 CALC_CFLBA_FROM_PART_ADR:
         LD HL, PARTADDR
