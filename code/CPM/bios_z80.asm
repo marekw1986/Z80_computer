@@ -23,28 +23,27 @@ LF          EQU  0AH
 	IF $ != CCP+1600H
 		error "BIOS begins at wrong address!"
 	ENDIF	
-BIOS_BOOT:   JMP      BIOS_BOOT_PROC
-BIOS_WBOOT:  JMP      BIOS_WBOOT_PROC
-BIOS_CONST:  JMP      BIOS_CONST_PROC
-BIOS_CONIN:  JMP      BIOS_CONIN_PROC
-BIOS_CONOUT: JMP      BIOS_CONOUT_PROC
-BIOS_LIST:   JMP      BIOS_LIST_PROC
-BIOS_PUNCH:  JMP      BIOS_PUNCH_PROC
-BIOS_READER: JMP      BIOS_READER_PROC
-BIOS_HOME:   JMP      BIOS_HOME_PROC
-BIOS_SELDSK: JMP      BIOS_SELDSK_PROC
-BIOS_SETTRK: JMP      BIOS_SETTRK_PROC
-BIOS_SETSEC: JMP      BIOS_SETSEC_PROC
-BIOS_SETDMA: JMP      BIOS_SETDMA_PROC
-BIOS_READ:   JMP      BIOS_READ_PROC
-BIOS_WRITE:  JMP      BIOS_WRITE_PROC
-BIOS_PRSTAT: JMP      BIOS_PRSTAT_PROC
-BIOS_SECTRN: JMP      BIOS_SECTRN_PROC	
+BIOS_BOOT:   JP      BIOS_BOOT_PROC
+BIOS_WBOOT:  JP      BIOS_WBOOT_PROC
+BIOS_CONST:  JP      BIOS_CONST_PROC
+BIOS_CONIN:  JP      BIOS_CONIN_PROC
+BIOS_CONOUT: JP      BIOS_CONOUT_PROC
+BIOS_LIST:   JP      BIOS_LIST_PROC
+BIOS_PUNCH:  JP      BIOS_PUNCH_PROC
+BIOS_READER: JP      BIOS_READER_PROC
+BIOS_HOME:   JP      BIOS_HOME_PROC
+BIOS_SELDSK: JP      BIOS_SELDSK_PROC
+BIOS_SETTRK: JP      BIOS_SETTRK_PROC
+BIOS_SETSEC: JP      BIOS_SETSEC_PROC
+BIOS_SETDMA: JP      BIOS_SETDMA_PROC
+BIOS_READ:   JP      BIOS_READ_PROC
+BIOS_WRITE:  JP      BIOS_WRITE_PROC
+BIOS_PRSTAT: JP      BIOS_PRSTAT_PROC
+BIOS_SECTRN: JP      BIOS_SECTRN_PROC	
 
 BIOS_BOOT_PROC:
 		DI
-		LD   HL,STACK
-        LD   SP,HL
+		LD SP, BIOS_STACK
 
         ; Turn on ROM shadowing
 		LD  A, 084H
@@ -52,19 +51,14 @@ BIOS_BOOT_PROC:
         NOP
         NOP
         
-        XOR A
         LD HL, 0000H
-        LD BC, CCP
-ZERO_LOOP:
-        LD A, 00H
-        LD (HL), A
-        INC HL
-        DEC BC
-        LD A, B
-        OR C
-        JP NZ, ZERO_LOOP
+        LD (HL), 00H
+        LD DE, 0001H
+        LD BC, CCP-1
+        LDIR
+        
         CALL CFGETMBR
-        CP 00H                     ; Check if MBR loaded properly
+        OR A                     ; Check if MBR loaded properly
         JP Z, LD_PART_TABLE
         CALL IPUTS
         DB 'MBR load err. Reset required.'
@@ -73,7 +67,7 @@ ZERO_LOOP:
 LD_PART_TABLE:
         CALL CFLDPARTADDR
 CFVAR_INIT:
-		LD A, 00H
+		XOR A
 		LD (CFLBA3), A
 		LD (CFLBA2), A
 		LD (CFLBA1), A
@@ -83,20 +77,6 @@ CFVAR_INIT:
 		LD (PCFLBA1), A
 		LD (PCFLBA0), A
 		LD (CFVAL), A
-	IF DEBUG > 0
-	    PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'Cold boot procedure entered'
-		DB CR
-		DB 00H
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
 		CALL IPUTS
 		DB 'Running CP/M 2.2'
 		DB CR
@@ -126,40 +106,13 @@ CPM_CRC_LOOP:
 		XOR A
 		LD (IOBYTE), A
 		LD (CDISK), A
-;BIOS_TRYKBINIT:								;Reinitialize keyboard
-;        CALL BIOS_KBDINIT                        ;Call init routine
-;        LD A, B							;Move result of operation to A
-;        CP 00H								;Check if OK
-;        JP NZ, BIOS_TRYKBINIT						;Retry if not ok. TODO add limit of retries
-		JMP GOCPM
+		JP GOCPM
 	
 BIOS_WBOOT_PROC:
 		DI
 		; We can't just blindly set SP=bios_stack here because disk_read can overwrite it!
 		; But we CAN set to use other areas that we KNOW are not currently in use!
-		LD HL, BIOS_WBOOT_STACK		; 
-		LD SP, HL
-	IF DEBUG > 0
-	    PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'WBOOT procedure entered'
-		DB CR
-		DB 00H
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
-	IF 0
-		CALL IPUTS
-		DB 'Wboot not implemented!'
-		DB CR
-        DB 00H
-        JP $
-    ENDIF
+		LD SP, BIOS_WBOOT_STACK		;
 		LD C, 0
 		CALL BIOS_SELDSK
 		LD BC, WB_TRK
@@ -173,7 +126,7 @@ BIOS_WBOOT_LOOP:
 		PUSH BC	; Save remaining sector count
 		CALL BIOS_READ
 		OR A
-		JP Z, BIOS_WBOOT_SEC_OK
+		JR Z, BIOS_WBOOT_SEC_OK
 		CALL IPUTS
 		DB 'ERROR: WBOOT FAILED. HALTING.'
 		DB CR
@@ -184,28 +137,20 @@ BIOS_WBOOT_LOOP:
 BIOS_WBOOT_SEC_OK:
 		; Advance the DMA pointer by 128 bytes
 		LD HL, (DISK_DMA)	; HL = last used DMA address
-		LD A, L
-		ADD A, 80H
-		LD L, A
-		LD A, H
-		ADC A, 00H
-		LD H, A
-		LD B, H
-		LD C, L	; BC = HL
+		LD DE, 128
+        ADD HL, DE          ; HL += 128
+        LD B, H
+        LD C, L             ; BC = HL
 		CALL BIOS_SETDMA
 		LD A, (DISK_SECTOR)		; A = last used sector number (low byte only for 0..3)
 		INC A
 		AND 03H				; if A+1 = 4 then A=0
-		JP NZ, BIOS_WBOOT_SEC	; if A+1 !=4 then do not advance the track number
+		JR NZ, BIOS_WBOOT_SEC	; if A+1 !=4 then do not advance the track number
 		; Advance to the next track
-		PUSH HL
-		LD HL, (DISK_TRACK)
-		LD B, H
-		LD C, L
-		POP HL
-		INC BC
+        LD BC, (DISK_TRACK)
+        INC BC
 		CALL BIOS_SETTRK
-		LD A, 00H 			; sett A=0 for first sector on new track
+		XOR A 			; sett A=0 for first sector on new track
 BIOS_WBOOT_SEC:
 		LD B, 00H
 		LD C, A
@@ -214,7 +159,7 @@ BIOS_WBOOT_SEC:
 		DEC BC				; BC--
 		LD A, B
 		OR C
-		JP NZ, BIOS_WBOOT_LOOP
+		JR NZ, BIOS_WBOOT_LOOP
 		; Fall through into GOCPM
 GOCPM:
 		LD A, 0C3H ;C3 is a jump instruction
@@ -245,7 +190,7 @@ BIOS_CONIN_PROC:
         IN   A, (DART_A_CMD)
         NOP
         AND  RxRDY_MASK
-        JP Z, BIOS_CONIN_PROC
+        JR Z, BIOS_CONIN_PROC
         IN   A, (DART_A_DATA)
 		RET
 	
@@ -254,8 +199,7 @@ BIOS_CONOUT_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL
+		LD SP, BIOS_STACK
 		PUSH AF
 		LD A, C			; Save A on BIOS stack
 		CALL OUT_CHAR
@@ -276,67 +220,17 @@ BIOS_READER_PROC:
 		RET
 		
 BIOS_HOME_PROC:
-	IF DEBUG > 0
-		PUSH HL				; Save content  of HL on original stack, then switch to bios stack
-		LD HL, 0000H
-		ADD HL,SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'HOME procedure entered'
-		DB CR
-		DB 00H
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF
 		LD BC, 0000H
 		;FALL INTO BIOS_SETTRK_PROC!!!
 		
 BIOS_SETTRK_PROC:
-		PUSH HL
-		LD L, C
-		LD H, B
-		LD (DISK_TRACK), HL
-		POP HL
-	IF DEBUG > 1
-		PUSH HL				; Save content  of HL on original stack, then switch to bios stack
-		LD HL, 0000H
-		ADD HL, SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL	
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'SETTRK procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF		
+		LD (DISK_TRACK), BC
 		RET
 		  
 BIOS_SELDSK_PROC:
 		LD A, C
         CP 04H     ; Only four partitions supported
-        JP NC, BIOS_SELDSK_PROC_WRNDSK
+        JR NC, BIOS_SELDSK_PROC_WRNDSK
         LD (DISK_DISK), A
 		LD HL, DISKA_DPH	
 		RET
@@ -345,65 +239,11 @@ BIOS_SELDSK_PROC_WRNDSK:
         RET
 		
 BIOS_SETSEC_PROC:
-		PUSH HL
-		LD L, C
-		LD H, B
-		LD (DISK_SECTOR), HL
-		POP HL	
-	IF DEBUG > 1
-		PUSH HL				; Save content  of HL on original stack, then switch to bios stack
-		LD HL, 0000H
-		ADD HL, SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'SETSEC procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF		
+		LD (DISK_SECTOR), BC	
 		RET
 		
 BIOS_SETDMA_PROC:
-		PUSH HL
-		LD L, C
-		LD H, B
-		LD (DISK_DMA), HL
-		POP HL
-	IF DEBUG > 1		
-		PUSH HL				; Save content  of HL on original stack
-		LD HL, 0000H		; then switch to bios stack
-		ADD HL, SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL				; Bios stack set. 		
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'SETDMA procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF
+		LD (DISK_DMA), BC
 		RET
 		
 BIOS_READ_PROC:
@@ -411,102 +251,31 @@ BIOS_READ_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, (BIOS_STACK)
-		LD SP, HL				; Bios stack set. 	
-	IF DEBUG > 0
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'READ procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
+		LD SP, BIOS_STACK
 		PUSH BC				; Now save remaining registers
 		PUSH DE
         CALL CALC_CFLBA_FROM_PART_ADR
-        CP 00H                            ; If 0 in A, no valid LBA calculated
-        JP Z, BIOS_READ_PROC_RET_ERR          ; In that case return and report error
+        OR A                            ; If 0 in A, no valid LBA calculated
+        JR Z, BIOS_READ_PROC_RET_ERR          ; In that case return and report error
 		CALL CFRSECT_WITH_CACHE
-	IF DEBUG > 0
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL PRINT_CFLBA_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
 		; If no error there should be 0 in A
-		CP 00H
-		JP Z, BIOS_READ_PROC_GET_SECT		; No error, just read sector. Otherwise report error and return.
-        JP BIOS_READ_PROC_RET_ERR		; Return
+		OR A
+		JR Z, BIOS_READ_PROC_GET_SECT		; No error, just read sector. Otherwise report error and return.
+        JR BIOS_READ_PROC_RET_ERR		; Return
 BIOS_READ_PROC_GET_SECT:
         CALL BIOS_CALC_SECT_IN_BUFFER
 		; Now DE contains the 16-bit result of multiplying the original value by 128
 		; D holds the high byte and E holds the low byte of the result
 		; Calculate the address of the CP/M sector in the BLKDAT
 		LD HL, BLKDAT
-		LD A, E
-		ADD A, L
-		LD E, A
-		LD A, D
-		ADC A, H
-		LD D, A
-	IF DEBUG > 1
-		PUSH DE	; Store DE (source address) in stack
-		CALL IPUTS
-		DB 'Calculated source address in CF bufffer = 0x'
-		DB 00H
-		POP DE	; Retrieve DE (source address)
-		LD A, D
-		CALL HEXDUMP_A
-		LD A, E
-		CALL HEXDUMP_A
-		LD A, CR
-		CALL OUT_CHAR
-	IF 0
-		PUSH DE
-		CALL IPUTS
-		DB 'Buffer before copy: '
-		DB 00H
-		POP DE
-		PUSH DE
-		LD B, 80H
-		CALL HEXDUMP
-		LD A, CR
-		CALL OUT_CHAR
-		POP DE
-	ENDIF
-	ENDIF
+		ADD HL, DE
 		; Source addres in DE
-		LD HL, (DISK_DMA)	; Load target address to HL
+		LD DE, (DISK_DMA)	; Load target address to HL
 		LD BC, 0080H	; How many bytes?
-		CALL MEMCOPY
-	IF 0 ;DEBUG > 0
-		PUSH DE
-		CALL IPUTS
-		DB 'Buffer after copy: '
-		DB 00H		
-		POP DE
-		LD HL, (DISK_DMA)
-		LD D, H
-		LD E, L
-		LD B, 80H
-		CALL HEXDUMP
-		LD A, CR
-		CALL OUT_CHAR
-	ENDIF
+		LDIR
 BIOS_READ_PROC_RET_ERR
         LD A, 1
-        JP BIOS_READ_PROC_RET
+        JR BIOS_READ_PROC_RET
 BIOS_READ_PROC_RET_OK    
         LD A, 0
 BIOS_READ_PROC_RET
@@ -515,7 +284,7 @@ BIOS_READ_PROC_RET
 		LD HL, (ORIGINAL_SP); Restore original stack
 		LD SP, HL
 		POP HL			; Restore original content of HL
-		LD A, 0
+		LD A, 0         ; TODO: fix it!!!!
 		RET
 		  
 BIOS_WRITE_PROC:
@@ -523,82 +292,57 @@ BIOS_WRITE_PROC:
 		LD HL, 0000H
 		ADD HL, SP	; HL = HL + SP
 		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL				; Bios stack set. 
-		
-	IF DEBUG > 0
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'WRITE procedure entered'
-		DB CR
-		DB 00H
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-	ENDIF
+		LD SP, BIOS_STACK
 		PUSH BC				; Now save remaining registers
 		PUSH DE
         ; Check content of C - deblocking code
         LD A, C
         CP 2               ; Is it first sector of new track?
-        JP Z, BIOS_WRITE_NEW_TRACK
+        JR Z, BIOS_WRITE_NEW_TRACK
 		; First read sector to have complete data in buffer
 		CALL CFRSECT_WITH_CACHE
-		CP 00H
-		JP NZ, BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
+		OR A
+		JR NZ, BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
 		CALL BIOS_CALC_SECT_IN_BUFFER
 		; Now DE contains the 16-bit result of multiplying the original value by 128
 		; D holds the high byte and E holds the low byte of the result
 		; Calculate the address of the CP/M sector in the BLKDAT
 		LD HL, BLKDAT
-		LD A, E
-		ADD A, L
-		LD E, A
-		LD A, D
-		ADC A, H
-		LD D, A
-        JP BIOS_WRITE_PERFORM
+		ADD HL, DE
+        EX HL, DE
+        JR BIOS_WRITE_PERFORM
         ; No need to calculate sector location in BLKDAT.
         ; Thanks to deblocking code = 2 we know it is first secor of new track
         ; Just fill remaining bytes of buffer with 0xE5 and copy secotr to the
         ; beginning of BLKDAT. Then write.
 BIOS_WRITE_NEW_TRACK
         LD HL, BLKDAT+128
-        LD BC, 384
-BIOS_WRITE_E5_FILL_LOOP:
-        LD A, 0E5H
-        LD M, A
-        INC HL
-        DEC BC
-        LD A, B
-        OR C
-        JP NZ, BIOS_WRITE_E5_FILL_LOOP
+        LD (HL), 0E5H
+        LD DE, BLKDAT+128+1
+        LD BC, 384-1
+        LDIR
+
         LD DE, BLKDAT
 BIOS_WRITE_PERFORM:
 		; Addres of sector in BLKDAT is now in DE
 		LD HL, (DISK_DMA)	; Load source address to HL
 		; Replace HL and DE. HL will now contain address od sector in BLKDAT and DE will store source from DISK_DMA
-		EX DE, HL
 		LD BC, 0080H	; How many bytes to copy?
-		CALL MEMCOPY
+		LDIR
 		; Buffer is updated with new sector data. Perform write.
         CALL CALC_CFLBA_FROM_PART_ADR
-        CP 00H         ; If A=0, no valid LBA calculated
-        JP Z, BIOS_WRITE_RET_ERR ; Return and report error
+        OR A         ; If A=0, no valid LBA calculated
+        JR Z, BIOS_WRITE_RET_ERR ; Return and report error
 		LD DE, BLKDAT
 		CALL CFWSECT
-		CP 00H			; Check result
-		JP NZ, BIOS_WRITE_RET_ERR
-		JP BIOS_WRITE_RET_OK				
+		OR A			; Check result
+		JR NZ, BIOS_WRITE_RET_ERR
+		JR BIOS_WRITE_RET_OK				
 BIOS_WRITE_RET_ERR:
-        LD A, 00H
+        XOR A
         LD (CFVAL), A
 		LD A, 1
-		JP BIOS_WRITE_RET
+		JR BIOS_WRITE_RET
 BIOS_WRITE_RET_OK:
         LD A, 01H
         LD (CFVAL), A
@@ -608,7 +352,7 @@ BIOS_WRITE_RET:
 		POP DE
 		POP BC	
 		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, H:
+		LD SP, HL
 		POP HL			; Restore original content of HL
 		RET
 		 
@@ -619,30 +363,7 @@ BIOS_PRSTAT_PROC:
 BIOS_SECTRN_PROC:
 		; 1:1 translation (no skew factor)
 		LD H, B
-		LD L, C
-	IF DEBUG > 1
-		PUSH HL				; Save content  of HL on original stack, then switch to bios stack
-		LD HL, 0000H
-		ADD HL, SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD HL, BIOS_STACK
-		LD SP, HL				; Bios stack set. 
-        PUSH AF
-        PUSH BC
-		PUSH DE
-		PUSH HL
-		CALL IPUTS
-		DB 'SECTRN procedure entered: '
-		DB 00H
-		CALL PRINT_DISK_DEBUG
-		POP HL
-		POP DE
-		POP BC
-		POP AF
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-	ENDIF		
+		LD L, C	
 		RET
 		
 ;KBDINIT - initializes 8042/8242 PS/2 keyboard controller
@@ -736,27 +457,36 @@ BIOS_SECTRN_PROC:
 ;        MVI B, 00H					;Return result code
 ;        RET
 
+;BIOS_CALC_SECT_IN_BUFFER:
+;        LD A, (DISK_SECTOR)  ; Load sector number
+;        LD E, A         ; Store in E (low byte)
+;        LD D, 0         ; Clear D (high byte)
+;        LD B, 7         ; Loop counter (7 shifts)
+;CALC_SECTOR_SHIFT_LOOP:
+;        LD A, E  
+;        ADD A, A   ; Shift E left (×2)
+;        LD E, A  
+;        LD A, D  
+;        ADC A, A   ; Shift D left with carry
+;        LD D, A  
+;        DEC B   ; Decrement counter
+;        JP NZ, CALC_SECTOR_SHIFT_LOOP  ; Repeat until done
+;		RET
+
 BIOS_CALC_SECT_IN_BUFFER:
-        LD A, (DISK_SECTOR)  ; Load sector number
-        LD E, A         ; Store in E (low byte)
-        LD D, 0         ; Clear D (high byte)
-        LD B, 7         ; Loop counter (7 shifts)
-CALC_SECTOR_SHIFT_LOOP:
-        LD A, E  
-        ADD A, A   ; Shift E left (×2)
-        LD E, A  
-        LD A, D  
-        ADC A, A   ; Shift D left with carry
-        LD D, A  
-        DEC B   ; Decrement counter
-        JP NZ, CALC_SECTOR_SHIFT_LOOP  ; Repeat until done		
-		RET
+        XOR A
+        LD E, A
+        LD A, (DISK_SECTOR)
+        RRA
+        RR E
+        LD D, A
+        RET
         
 CALC_CFLBA_FROM_PART_ADR:
         LD HL, PARTADDR
         LD A, (DISK_DISK)
 CALC_CFLBA_LOOP_START
-        CP 00H
+        OR A
         JP Z, CALC_CFLBA_LOOP_END
         DEC A
         INC HL
@@ -770,30 +500,30 @@ CALC_CFLBA_LOOP_START
         CALL ISZERO32BIT
         JP Z, CALC_CFLBA_RET_ERR
 CALC_CFLBA_LOOP_END:       
-        LD B, M
+        LD B, (HL)
         INC HL
-        LD C, M
+        LD C, (HL)
         INC HL
-        LD D, M
+        LD D, (HL)
         INC HL
-        LD E, M
+        LD E, (HL)
         LD HL, (DISK_TRACK)
         ; ADD lower 16 bits (HL + BC)
-        LD A, L
-        ADD A, B            ; A = L + B
-        LD B, A         ; Store result in C
-        LD A, H
-        ADC A, C            ; A = H + C + Carry
-        LD C, A         ; Store result in B
+        LD   A, L
+        ADD  A, B            ; A = L + B
+        LD   B, A         ; Store result in C
+        LD   A, H
+        ADC  A, C            ; A = H + C + Carry
+        LD   C, A         ; Store result in B
         ; ADD upper 16 bits (DE + Carry)
-        LD A, D
-        LD D, 00H
-        ADC A, D             ; D = D + Carry
-        LD D, A
-        LD A, E
-        LD E, 00H
-        ADC A, E             ; E = E + Carry
-        LD E, A
+        LD   A, D
+        LD   D, 00H
+        ADC  A, D             ; D = D + Carry
+        LD   D, A
+        LD   A, E
+        LD   E, 00H
+        ADC  A, E             ; E = E + Carry
+        LD   E, A
         ; Store the result back at LBA        
         LD A, B
         LD (CFLBA0), A
@@ -806,7 +536,7 @@ CALC_CFLBA_LOOP_END:
         LD A, 01H
         RET
 CALC_CFLBA_RET_ERR
-        LD A, 00H
+        XOR A
         RET
 		
 	IF DEBUG > 0
@@ -883,10 +613,10 @@ PRINT_COLON:
 		RET
 	ENDIF
 
-        include "cf.asm"
-        include "utils.asm"
+        include "cf_z80.asm"
+        include "utils_z80.asm"
         include "../common/definitions.asm"
-        include "../common/hexdump.asm"
+        include "../common/hexdump_z80.asm"
 	
 LAST_CHAR		DB	00H		; Last ASCII character from keyboard	
 DISK_DISK:		DB	00H		; Should it be here?

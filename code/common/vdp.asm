@@ -18,7 +18,7 @@ VDPZEROVRAM:
         NOP
         NOP
 VDPZEROVRAML:
-        MVI A, 00H
+        XRA A
         OUT VDP_DATA
         NOP
         NOP
@@ -109,10 +109,10 @@ VDPPUTC:
 		CPI 08H							;Check if it is BACKSPACE
 		JNZ VDPPUTC_CHLF				;It is not. Check for next special character
 		LDA CURSOR
-		CPI 00H
+		ORA A
 		JNZ VDPPUTC_BSDEC				;It is not zero. We can decrement.
 		LDA CURSOR+1
-		CPI 00H
+		ORA A
 		JNZ VDPPUTC_BSDEC				;It is not zero. We can decrement.
 		RET								;It is zero. Just return
 VDPPUTC_BSDEC		

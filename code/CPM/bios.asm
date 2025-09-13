@@ -56,7 +56,7 @@ BIOS_BOOT_PROC:
         LXI H, 0000H
         LXI B, CCP
 ZERO_LOOP:
-        MVI A, 00H
+        XRA A
         MOV M, A
         INX H
         DCX B
@@ -64,7 +64,7 @@ ZERO_LOOP:
         ORA C
         JNZ ZERO_LOOP
         CALL CFGETMBR
-        CPI 00H                     ; Check if MBR loaded properly
+        ORA A                     ; Check if MBR loaded properly
         JZ LD_PART_TABLE
         CALL IPUTS
         DB 'MBR load err. Reset required.'
@@ -73,7 +73,7 @@ ZERO_LOOP:
 LD_PART_TABLE:
         CALL CFLDPARTADDR
 CFVAR_INIT:
-		MVI A, 00H
+		XRA A
 		STA	CFLBA3
 		STA	CFLBA2
 		STA	CFLBA1
@@ -205,7 +205,7 @@ BIOS_WBOOT_SEC_OK:
 		POP H
 		INX B
 		CALL BIOS_SETTRK
-		MVI A, 00H 			; sett A=0 for first sector on new track
+		XRA A 			; sett A=0 for first sector on new track
 BIOS_WBOOT_SEC:
 		MVI B, 00H
 		MOV C, A
@@ -430,7 +430,7 @@ BIOS_READ_PROC:
 		PUSH B				; Now save remaining registers
 		PUSH D
         CALL CALC_CFLBA_FROM_PART_ADR
-        CPI 00H                            ; If 0 in A, no valid LBA calculated
+        ORA A                            ; If 0 in A, no valid LBA calculated
         JZ BIOS_READ_PROC_RET_ERR          ; In that case return and report error
 		CALL CFRSECT_WITH_CACHE
 	IF DEBUG > 0
@@ -445,7 +445,7 @@ BIOS_READ_PROC:
 		POP PSW
 	ENDIF
 		; If no error there should be 0 in A
-		CPI 00H
+		ORA A
 		JZ BIOS_READ_PROC_GET_SECT		; No error, just read sector. Otherwise report error and return.
         JMP BIOS_READ_PROC_RET_ERR		; Return
 BIOS_READ_PROC_GET_SECT:
@@ -548,7 +548,7 @@ BIOS_WRITE_PROC:
         JZ BIOS_WRITE_NEW_TRACK
 		; First read sector to have complete data in buffer
 		CALL CFRSECT_WITH_CACHE
-		CPI 00H
+		ORA A
 		JNZ BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
 		CALL BIOS_CALC_SECT_IN_BUFFER
 		; Now DE contains the 16-bit result of multiplying the original value by 128
@@ -587,15 +587,15 @@ BIOS_WRITE_PERFORM:
 		CALL MEMCOPY
 		; Buffer is updated with new sector data. Perform write.
         CALL CALC_CFLBA_FROM_PART_ADR
-        CPI 00H         ; If A=0, no valid LBA calculated
+        ORA A         ; If A=0, no valid LBA calculated
         JZ BIOS_WRITE_RET_ERR ; Return and report error
 		LXI D, BLKDAT
 		CALL CFWSECT
-		CPI 00H			; Check result
+		ORA A			; Check result
 		JNZ BIOS_WRITE_RET_ERR
 		JMP BIOS_WRITE_RET_OK				
 BIOS_WRITE_RET_ERR:
-        MVI A, 00H
+        XRA A
         STA CFVAL
 		MVI A, 1
 		JMP BIOS_WRITE_RET
@@ -756,7 +756,7 @@ CALC_CFLBA_FROM_PART_ADR:
         LXI H, PARTADDR
         LDA DISK_DISK
 CALC_CFLBA_LOOP_START
-        CPI 00H
+        ORA A
         JZ CALC_CFLBA_LOOP_END
         DCR A
         INX H
@@ -806,7 +806,7 @@ CALC_CFLBA_LOOP_END:
         MVI A, 01H
         RET
 CALC_CFLBA_RET_ERR
-        MVI A, 00H
+        XRA A
         RET
 		
 	IF DEBUG > 0

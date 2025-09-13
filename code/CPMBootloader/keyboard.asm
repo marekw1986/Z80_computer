@@ -54,7 +54,7 @@ KBDCRTLSET:
         CPI 04H                     ;Check if it is KBD DATA stuck high error
         MVI B, 05H                  ;Return result code if it is
         RZ                         
-        CPI 00H                     ;Is it 0x00? Did it pass the test?
+        ORA A                     ;Is it 0x00? Did it pass the test?
         MVI B, 06H					;Return result code if not
         RNZ                          ;No? Return then
         ;6. Enable Devices
@@ -80,7 +80,7 @@ KBDCRTLSET:
         MVI A, 09H					;Interrupts enabled, system flag set, first port clock enabled
 		OUT KBD_DATA				;second port clock disabled, first port translation disabled
         ;9. Zero out buffer        
-        MVI A, 00H                  
+        XRA A                  
         STA KBDDATA					;Zero KBDDATA
         STA KBDKRFL					;Zero key release flag
         STA KBDSFFL					;Zero shift flag
@@ -105,14 +105,14 @@ KBDWAITOUTBUF:
 		
 KBD_PRESENT:
 		LDA KBDDATA					;Load latest received PS/2 scancode
-		CPI 00H						;Is it 0? (this is needed - LDA doesn't affect flags)
+		ORA A						;Is it 0? (this is needed - LDA doesn't affect flags)
 		RZ
 		MVI A, 0FFH
 		RET
 		
 KBD2ASCII:
 		LDA KBDDATA					;Load latest received PS/2 scancode
-		CPI 00H						;Is it 0? (this is needed - LDA doesn't affect flags)
+		ORA A						;Is it 0? (this is needed - LDA doesn't affect flags)
 		RZ							;Return if code = 0;
 		CPI 0F0H					;Is it 0xF0 (key release)?
 		JNZ KBD2A_CHKSFT			;If not, go to the next stage
@@ -141,7 +141,7 @@ KBD2A_SVNEWDATA:
         NOP							;If not, handle error here.
         NOP							;These are just a placeholders
 KBD2A_CLRKRFL:
-		MVI A, 00H
+		XRA A
 		STA KBDKRFL
 		JMP KBD2A_CLRDATA_RETURN
 KBD2A_CHKSHFFLSET:
@@ -149,15 +149,15 @@ KBD2A_CHKSHFFLSET:
 		LDA KBDNEW					;Put newest key scancode in A
 		MOV B, A					;Then move it to B
 		LDA KBDSFFL					;Check shift flag
-		CPI 00H                     ;This is needed - LDA doesn't affect zero flag
+		ORA A                     ;This is needed - LDA doesn't affect zero flag
 		JZ KBD2A_LOOKUP				;Just search in LC table
 		MVI L, 02H					;We are looking in UC table if shift flag is set
 KBD2A_LOOKUP		
 		CALL KBDSCANTABLE			;Call scantable searching subroutine
-		CPI 00H						;Check if it returned zero (this is needed)
+		ORA A						;Check if it returned zero (this is needed)
 		JZ KBD2A_CLRDATA_RETURN		;If yes, clear data and return
 		MOV B, A					;Else clear KBDDATA and return
-		MVI A, 00H					;Passing ASCII character in A
+		XRA A					;Passing ASCII character in A
 		STA KBDDATA
 		MOV A, B
 		RET
@@ -169,11 +169,11 @@ KBD2A_CHKKRSETSF:
 		STA KBDSFFL
 		JMP KBD2A_CLRDATA_RETURN    ;Clear KBDDATA and return        
 KBD2A_CLRFLDATA_RETURN:
-		MVI A, 00H
+		XRA A
 		STA KBDSFFL
 		STA KBDKRFL
 KBD2A_CLRDATA_RETURN:
-        MVI A, 00H
+        XRA A
 		STA KBDDATA		
 		RET
 		
@@ -199,7 +199,7 @@ KBDSCANTABLE_LOOP:
 		CMP C							;Compare A with C
 KBDSCANTABLE_REL:
 		JC KBDSCANTABLE_LOOP
-		MVI A, 00H                     	;End of the loop, return zero
+		XRA A                     	;End of the loop, return zero
 		RET
 KBDSCANTABLE_FOUND:
 		DAD D							;Add DE to HL

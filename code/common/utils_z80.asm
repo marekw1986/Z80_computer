@@ -84,12 +84,12 @@ PRN_ZERO_EX:
 ;PRINTS STRING POINTED BY DE AND TERMINATED WITH CR OR NULL
 ;MAX NUMBER OF CHARACTERS IN B         
 PRNSTR:	LD A, B
-		CP 00H
+		OR A
 		RET Z
 		LD A, (DE)							;GET A CHARACTER
 		CP CR
 		RET Z
-		CP 00H
+		OR A
 		RET Z
 		CALL OUT_CHAR
 		INC DE							
@@ -99,7 +99,7 @@ PRNSTR:	LD A, B
 ;SAWPS PAIR IN STRING POINTED BY DE UNTIL B REACH 0
 ;B IS NUMBER OF PAIRS!!!
 SWPSTR: LD A, B
-		CP 00H
+		OR A
 		RET Z
 		LD A, (DE)
 		LD H, A
@@ -134,7 +134,7 @@ PUTS_LOOP:
 		LD D, H
 		LD E, L
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET Z					; If a is zero, return
 		CALL OUT_CHAR
 		INC HL
@@ -143,19 +143,19 @@ PUTS_LOOP:
 ; Checks if 32 variable pointed by DL is zero		
 ISZERO32BIT:
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET NZ
 		INC DE
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET NZ
 		INC DE
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET NZ
 		INC DE
 		LD A, (DE)
-		CP 00H
+		OR A
 		RET
 		
 ; CRC-16/ARC for 8080/Z80

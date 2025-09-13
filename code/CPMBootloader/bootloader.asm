@@ -20,7 +20,7 @@ INIT:   LXI  H, 0000H
         SHLD SYSTICK
         LXI  H, 0000H
         SHLD RTCTICK
-        MVI A, 00H
+        XRA A
         STA  KBDDATA
         ;Initialize CTC
         MVI  A, 05H      ; Control word: Timer mode, prescaler 16, enable TO output
@@ -37,7 +37,7 @@ INIT:   LXI  H, 0000H
         OUT DART_A_CMD
         MVI A, 1          ; Register 1
         OUT DART_A_CMD
-        MVI A, 00H       ; WAIT/READY disabled, TX and RX interrupts disabled
+        XRA A       ; WAIT/READY disabled, TX and RX interrupts disabled
         OUT DART_A_CMD
         MVI A, 3         ; Register 3
         OUT DART_A_CMD
@@ -56,7 +56,7 @@ INIT:   LXI  H, 0000H
         OUT DART_B_CMD
         MVI A, 1          ; Register 1
         OUT DART_B_CMD
-        MVI A, 00H       ; WAIT/READY disabled, TX and RX interrupts disabled
+        XRA A       ; WAIT/READY disabled, TX and RX interrupts disabled
         OUT DART_B_CMD
         MVI A, 3         ; Register 3
         OUT DART_B_CMD
@@ -90,7 +90,7 @@ INIT:   LXI  H, 0000H
 		DB 'CF CARD: '
 		DB 00H
 		CALL CFINIT
-		CPI 00H								; Check if CF_WAIT during initialization timeouted
+		ORA A								; Check if CF_WAIT during initialization timeouted
 		JZ GET_CFINFO
 		CALL IPUTS
 		DB 'missing'
@@ -159,15 +159,15 @@ CHECK_PARTITION1_SIZE:
 		JNC BOOT_CPM ;PRINT_BOOT_OPTIONS		; It is bigger
 		INX D
 		LDAX D
-		CPI 00H
+		ORA A
 		JNZ BOOT_CPM ;PRINT_BOOT_OPTIONS
 		INX D
 		LDAX D
-		CPI 00H
+		ORA A
 		JNZ BOOT_CPM ;PRINT_BOOT_OPTIONS
 		INX D
 		LDAX D
-		CPI 00H
+		ORA A
 		JNZ BOOT_CPM ;PRINT_BOOT_OPTIONS
 		CALL IPUTS
 		DB 'ERROR: partition 1 < 16kB'
@@ -178,7 +178,7 @@ CHECK_PARTITION1_SIZE:
 BOOT_CPM:
 		DI
         CALL LOAD_PARTITION1
-        CPI 00H
+        ORA A
         JZ JUMP_TO_CPM
         CALL IPUTS
         DB 'CP/M load error. Reset.'
@@ -300,7 +300,7 @@ RTC_ISR:
 		PUSH PSW						;Save condition bits and accumulator
         PUSH H
         PUSH D
-        MVI A, 00H                      ;Clear the RTC interrupt flag to change state of the line
+        XRA A                      ;Clear the RTC interrupt flag to change state of the line
         OUT RTC_CTRLD_REG
         LHLD RTCTICK                    ;Load RTCTICK variable to HL
         INX H                           ;Increment HL

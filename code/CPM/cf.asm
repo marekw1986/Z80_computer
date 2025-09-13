@@ -24,7 +24,7 @@ CFCHERR:
         IN	CFREG1
 		RET
 CFNERR:
-		MVI A, 00H
+		XRA A
         RET    
             
 CFREAD:
@@ -83,15 +83,15 @@ CFRSECT:
 ; Destination address is BLKDAT     
 CFRSECT_WITH_CACHE:
 		LDA CFVAL						; Check if we have valid data in buffer
-		CPI 00H
+		ORA A
 		JZ	CFRSECT_WITH_CACHE_PERFORM  ; If not, read
 		LXI H, CFLBA3					; Check if old and new LBA values are equal
 		LXI D, PCFLBA3
 		CALL IS32BIT_EQUAL
-		CPI 00H							; If not, new LBA. Read imediately
+		ORA A							; If not, new LBA. Read imediately
 		JZ CFRSECT_WITH_CACHE_PERFORM
 		; We already have valid data in buffer. No need to read it again
-		MVI A, 00H						; Store 0 in A to signalize no err
+		XRA A						; Store 0 in A to signalize no err
 		RET
 CFRSECT_WITH_CACHE_PERFORM:
 		CALL CFSLBA						;SET LBA
@@ -103,7 +103,7 @@ CFRSECT_WITH_CACHE_PERFORM:
 		LXI	D, BLKDAT
 		CALL CFREAD
 		CALL CFCHERR
-		CPI 00H							; If A=0, no error, good read
+		ORA A							; If A=0, no error, good read
 		JNZ CFRSECT_WITH_CACHE_BAD
 		PUSH PSW
 		MVI A, 01H
@@ -114,7 +114,7 @@ CFRSECT_WITH_CACHE_PERFORM:
 		RET
 CFRSECT_WITH_CACHE_BAD:
         PUSH PSW
-        MVI A, 00H
+        XRA A
         STA CFVAL
         POP PSW
 		RET
@@ -131,7 +131,7 @@ CFWSECT:
         RET
         
 CFGETMBR:
-		MVI A, 00H
+		XRA A
 		OUT CFREG3						;LBA 0
 		OUT CFREG4						;LBA 1
 		OUT CFREG5						;LBA 2

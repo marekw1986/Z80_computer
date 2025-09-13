@@ -3,16 +3,11 @@ STACK          EQU IR_VECTORS_RAM-1
 
 		include "../common/definitions.asm"
 
-        ORG  0000H
-START:  LD   HL,STACK
-        LD   SP,HL
-        LD   A,0FFH
-        JP   INIT    
-        
-;START:  LD   SP, STACK                   ;*** COLD START ***
-;        LD   A, 0FFH
-;        JP  INIT
-;
+        ORG  0000H    
+START:  LD   SP, STACK                   ;*** COLD START ***
+        LD   A, 0FFH
+        JP  INIT
+
 
 		include "../common/cf_z80.asm"
 		;include "keyboard.asm"
@@ -21,10 +16,9 @@ START:  LD   HL,STACK
 
         ;Set SYSTICK, RTCTICK and KBDDATA to 0x00
 INIT:   LD   HL, 0000H
-        LD (SYSTICK), HL
-        LD   HL, 0000H
-        LD  (RTCTICK), HL
-        LD   A, 00H
+        LD   (SYSTICK), HL
+        LD   (RTCTICK), HL
+        XOR A
         LD  (KBDDATA), A
         ;Initialize CTC
         LD   A, 05H      		; Control word: Timer mode, prescaler 16, enable TO output
@@ -41,7 +35,7 @@ INIT:   LD   HL, 0000H
         OUT (DART_A_CMD), A
         LD  A, 1          ; Register 1
         OUT (DART_A_CMD), A
-        LD  A, 00H       ; WAIT/READY disabled, TX and RX interrupts disabled
+        XOR A       ; WAIT/READY disabled, TX and RX interrupts disabled
         OUT (DART_A_CMD), A
         LD  A, 3         ; Register 3
         OUT (DART_A_CMD), A
@@ -60,7 +54,7 @@ INIT:   LD   HL, 0000H
         OUT (DART_B_CMD), A
         LD  A, 1          ; Register 1
         OUT (DART_B_CMD), A
-        LD  A, 00H       ; WAIT/READY disabled, TX and RX interrupts disabled
+        XOR A       ; WAIT/READY disabled, TX and RX interrupts disabled
         OUT (DART_B_CMD), A
         LD  A, 3         ; Register 3
         OUT (DART_B_CMD), A
@@ -78,7 +72,7 @@ INIT:   LD   HL, 0000H
         LD  BC, 32                       ;BYTES TO TRANSFER
         LD  DE, IR_VECTORS_ROM           ;SOURCE
         LD  HL, IR_VECTORS_RAM           ;DESTINATION
-        CALL MEMCOPY
+        LDIR
 
         ; Wait before initializing CF card
 		LD  C, 255
@@ -94,7 +88,7 @@ INIT:   LD   HL, 0000H
 		DB 'CF CARD: '
 		DB 00H
 		CALL CFINIT
-		CP 00H								; Check if CF_WAIT during initialization timeouted
+		OR A								; Check if CF_WAIT during initialization timeouted
 		JP Z, GET_CFINFO
 		CALL IPUTS
 		DB 'missing'
@@ -163,15 +157,15 @@ CHECK_PARTITION1_SIZE:
 		JP NC, BOOT_CPM ;PRINT_BOOT_OPTIONS		; It is bigger
 		INC DE
 		LD A, (DE)
-		CP 00H
+		OR A
 		JP NZ, BOOT_CPM ;PRINT_BOOT_OPTIONS
 		INC DE
 		LD A, (DE)
-		CP 00H
+		OR A
 		JP NZ, BOOT_CPM ;PRINT_BOOT_OPTIONS
 		INC DE
 		LD A, (DE)
-		CP 00H
+		OR A
 		JP NZ, BOOT_CPM ;PRINT_BOOT_OPTIONS
 		CALL IPUTS
 		DB 'ERROR: partition 1 < 16kB'
@@ -182,7 +176,7 @@ CHECK_PARTITION1_SIZE:
 BOOT_CPM:
 		DI
         CALL LOAD_PARTITION1
-        CP 00H
+        OR A
         JP Z, JUMP_TO_CPM
         CALL IPUTS
         DB 'CP/M load error. Reset.'
@@ -304,7 +298,7 @@ RTC_ISR:
 		PUSH AF						;Save condition bits and accumulator
         PUSH HL
         PUSH DE
-        LD A, 00H                      ;Clear the RTC interrupt flag to change state of the line
+        XOR A                      ;Clear the RTC interrupt flag to change state of the line
         OUT (RTC_CTRLD_REG), A
         LD HL, (RTCTICK)                    ;Load RTCTICK variable to HL
         INC HL                           ;Increment HL
