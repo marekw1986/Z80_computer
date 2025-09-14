@@ -273,6 +273,7 @@ BIOS_READ_PROC_GET_SECT:
 		LD DE, (DISK_DMA)	; Load target address to HL
 		LD BC, 0080H	; How many bytes?
 		LDIR
+        JR BIOS_READ_PROC_RET_OK
 BIOS_READ_PROC_RET_ERR
         LD A, 1
         JR BIOS_READ_PROC_RET
@@ -284,7 +285,6 @@ BIOS_READ_PROC_RET
 		LD HL, (ORIGINAL_SP); Restore original stack
 		LD SP, HL
 		POP HL			; Restore original content of HL
-		LD A, 0         ; TODO: fix it!!!!
 		RET
 		  
 BIOS_WRITE_PROC:
