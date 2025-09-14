@@ -1,8 +1,5 @@
 # Adjust the run address to match the .org in the source code
-all: bootloader.hex
-
-bootloader.hex: bootloader.asm
-	a85 bootloader.asm -l bootloader.lst -o bootloader.hex
+all: bootloader.bin
 	
 bootloader.p: bootloader.asm
 	asl -o bootloader.p -L -OLIST bootloader.lst bootloader.asm -cpu 8080
