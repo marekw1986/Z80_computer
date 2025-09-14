@@ -172,19 +172,19 @@ BLUR:   JP		PE, BLUR1
         SCF
 BLUR1:  DB 01FH ;RAR
         AND     0E0H
-        DB 017H ;RAL
+        RLA
         LD      B,A
-        DB 017H ;RAL
+        RLA
         XOR     B
         XOR     H
         LD      B,A
         XOR     H
-        DB 01FH ;RAR
+        RRA; DB 01FH ;RAR
         LD      A,L
-        DB 01FH ;RAR
+        RRA ;DB 01FH ;RAR
         LD	    L,A
         AND     A
-        DB 01FH ;RAR
+        RRA; DB 01FH ;RAR
         XOR     L
         LD      L,B
         LD      H,A
