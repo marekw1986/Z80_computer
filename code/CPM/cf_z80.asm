@@ -14,13 +14,13 @@ PCFLBA0	    DS	 1
 CFWAIT:
         IN A, (CFREG7)
         AND 80H                         ;MASK OUT BUSY FLAG
-        JP NZ, CFWAIT
+        JR NZ, CFWAIT
         RET
         
 CFCHERR:	
         IN A, (CFREG7)
         AND	01H		                    ;MASK OUT ERROR BIT
-        JP Z, CFNERR
+        JR Z, CFNERR
         IN	A, (CFREG1)
 		RET
 CFNERR:
@@ -31,11 +31,11 @@ CFREAD:
         CALL CFWAIT
         IN A, (CFREG7)
         AND	08H	                    ;FILTER OUT DRQ
-        JP Z, CFREADE
+        JR Z, CFREADE
         IN A, (CFREG0)		            ;READ DATA BYTE
         LD (DE), A
         INC DE
-        JP	CFREAD
+        JR	CFREAD
 CFREADE:
         RET
         
@@ -43,11 +43,11 @@ CFWRITE:
         CALL CFWAIT
         IN A, (CFREG7)
         AND 08H                     ;FILTER OUT DRQ
-        JP Z, CFWRITEE
+        JR Z, CFWRITEE
         LD A, (DE)
         OUT (CFREG0), A
         INC DE
-        JP CFWRITE
+        JR CFWRITE
 CFWRITEE:
         RET
         
@@ -84,12 +84,12 @@ CFRSECT:
 CFRSECT_WITH_CACHE:
 		LD A, (CFVAL)						; Check if we have valid data in buffer
 		OR A
-		JP Z, CFRSECT_WITH_CACHE_PERFORM  ; If not, read
+		JR Z, CFRSECT_WITH_CACHE_PERFORM  ; If not, read
 		LD HL, CFLBA3					; Check if old and new LBA values are equal
 		LD DE, PCFLBA3
 		CALL IS32BIT_EQUAL
 		OR A							; If not, new LBA. Read imediately
-		JP Z, CFRSECT_WITH_CACHE_PERFORM
+		JR Z, CFRSECT_WITH_CACHE_PERFORM
 		; We already have valid data in buffer. No need to read it again
 		XOR A						; Store 0 in A to signalize no err
 		RET
@@ -104,7 +104,7 @@ CFRSECT_WITH_CACHE_PERFORM:
 		CALL CFREAD
 		CALL CFCHERR
 		OR A							; If A=0, no error, good read
-		JP NZ, CFRSECT_WITH_CACHE_BAD
+		JR NZ, CFRSECT_WITH_CACHE_BAD
 		PUSH AF
 		LD A, 01H
 		LD (CFVAL), A

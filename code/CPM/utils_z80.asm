@@ -5,7 +5,7 @@ OUT_CHAR:
 OUT_CHAR_WAIT:    
 		IN   A, (DART_A_CMD)                 ;COME HERE TO DO OUTPUT
         AND  TxRDY_MASK                 ;STATUS BIT
-        JP Z, OUT_CHAR_WAIT              ;NOT READY, WAIT
+        JR Z, OUT_CHAR_WAIT              ;NOT READY, WAIT
         POP  AF                        ;READY, GET OLD A BACK
         OUT  (DART_A_DATA), A                ;AND SEND IT OUT
 		RET
@@ -46,7 +46,7 @@ PUTS_LOOP:
 		RET Z					; If a is zero, return
 		CALL OUT_CHAR
 		INC HL
-		JP PUTS_LOOP
+		JR PUTS_LOOP
 
 ; Checks if 32 variable pointed by DL is zero		
 ISZERO32BIT:
@@ -103,7 +103,7 @@ IS32BIT_EQUAL_LOOP:
     INC HL           		; Move to next byte in ADDR1
     INC DE           		; Move to next byte in ADDR2
     DEC B           		; Decrement byte counter
-    JP NZ, IS32BIT_EQUAL_LOOP  ; Repeat until all bytes are checked
+    JR NZ, IS32BIT_EQUAL_LOOP  ; Repeat until all bytes are checked
     RET             		; Return with A = 1 (equal)
 IS32BIT_NOT_EQUAL:
     XOR A        		; Set A = 0 (not equal)
@@ -112,5 +112,5 @@ IS32BIT_NOT_EQUAL:
 ;THIS IS JUSY ENDLESS LOOP. Go here if something is wrong.		
 ENDLESS_LOOP:
 		NOP
-		JP ENDLESS_LOOP
+		JR ENDLESS_LOOP
         

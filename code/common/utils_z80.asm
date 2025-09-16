@@ -5,7 +5,7 @@ OUT_CHAR:
 OUT_CHAR_WAIT:    
 		IN   A, (DART_A_CMD)                 ;COME HERE TO DO OUTPUT
         AND  TxRDY_MASK                 ;STATUS BIT
-        JP Z, OUT_CHAR_WAIT              ;NOT READY, WAIT
+        JR Z, OUT_CHAR_WAIT              ;NOT READY, WAIT
         POP  AF                        ;READY, GET OLD A BACK
         OUT  (DART_A_DATA), A                ;AND SEND IT OUT
 		RET
@@ -16,10 +16,10 @@ PETLA_DEL_WEWN:
         NOP
         NOP
         DEC B
-        JP NZ, PETLA_DEL_WEWN                          
+        JR NZ, PETLA_DEL_WEWN                          
         DEC C
         RET Z
-        JP DELAY        
+        JR DELAY        
         
 
 MEMCOPY:
@@ -34,7 +34,7 @@ MC_LOOP:
         DEC BC                           ;Decrement BC   (does not affect Flags)
         LD A, B                        ;Copy B to A    (so as to compare BC with zero)
         OR C                           ;A = A | C      (set zero)
-        JP NZ, MC_LOOP                     ;Jump to 'loop:' if the zero-flag is not set.   
+        JR NZ, MC_LOOP                     ;Jump to 'loop:' if the zero-flag is not set.   
         RET                             ;Return
         
 PRN_IND_DIGIT:
@@ -94,7 +94,7 @@ PRNSTR:	LD A, B
 		CALL OUT_CHAR
 		INC DE							
 		DEC B
-		JP PRNSTR
+		JR PRNSTR
 
 ;SAWPS PAIR IN STRING POINTED BY DE UNTIL B REACH 0
 ;B IS NUMBER OF PAIRS!!!
@@ -114,7 +114,7 @@ SWPSTR: LD A, B
 		INC DE
 		INC DE
 		DEC B
-		JP SWPSTR
+		JR SWPSTR
 		
 IPUTS:
 		EX (SP),HL
@@ -138,7 +138,7 @@ PUTS_LOOP:
 		RET Z					; If a is zero, return
 		CALL OUT_CHAR
 		INC HL
-		JP PUTS_LOOP
+		JR PUTS_LOOP
 
 ; Checks if 32 variable pointed by DL is zero		
 ISZERO32BIT:
@@ -187,5 +187,5 @@ BLUR81: RRA
 ;THIS IS JUSY ENDLESS LOOP. Go here if something is wrong.		
 ENDLESS_LOOP:
 		NOP
-		JP ENDLESS_LOOP
+		JR ENDLESS_LOOP
         

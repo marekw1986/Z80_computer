@@ -1,11 +1,8 @@
 CFINIT:
 		XOR A
 		LD (CFLBA3), A
-		XOR A
 		LD (CFLBA2), A
-		XOR A
 		LD (CFLBA1), A
-		XOR A
 		LD (CFLBA0), A
         LD A, 04H
         OUT (CFREG7), A
@@ -18,7 +15,7 @@ CFINIT:
         OUT (CFREG7), A
         CALL CFWAIT_TMOUT
         OR A							;Check if wait loop timeouted
-        JP NZ, CFINIT_RET					;If so there is no point in checking error code
+        JR NZ, CFINIT_RET					;If so there is no point in checking error code
         CALL CFCHERR
 CFINIT_RET
         RET
@@ -26,7 +23,7 @@ CFINIT_RET
 CFWAIT:
         IN A, (CFREG7)
         AND 80H                         ;MASK OUT BUSY FLAG
-        JP NZ, CFWAIT
+        JR NZ, CFWAIT
         RET
         
 CFWAIT_TMOUT:
@@ -36,12 +33,12 @@ CFWAIT_TMOUT_LOOP_EXT:
 CFWAIT_TMOUT_LOOP_INT:
         IN A, (CFREG7)
         AND 80H                  		;MASK OUT BUSY FLAG
-        JP Z, CFWAIT_TMOUT_OK
+        JR Z, CFWAIT_TMOUT_OK
         DEC B
-        JP NZ, CFWAIT_TMOUT_LOOP_INT
+        JR NZ, CFWAIT_TMOUT_LOOP_INT
         DEC C
-        JP Z, CFWAIT_TMOUT_NOK
-        JP CFWAIT_TMOUT_LOOP_EXT
+        JR Z, CFWAIT_TMOUT_NOK
+        JR CFWAIT_TMOUT_LOOP_EXT
 CFWAIT_TMOUT_OK:
         XOR A						;OK result
         RET
@@ -52,7 +49,7 @@ CFWAIT_TMOUT_NOK:
 CFCHERR:	
         IN A, (CFREG7)
         AND	01H		                    ;MASK OUT ERROR BIT
-        JP Z, CFNERR
+        JR Z, CFNERR
         IN	A, (CFREG1)
 		RET
 CFNERR:
@@ -63,11 +60,11 @@ CFREAD:
         CALL CFWAIT
         IN A, (CFREG7)
         AND	08H	                    ;FILTER OUT DRQ
-        JP Z, CFREADE
+        JR Z, CFREADE
         IN A, (CFREG0)		            ;READ DATA BYTE
         LD (DE), A
         INC DE
-        JP	CFREAD
+        JR	CFREAD
 CFREADE:
         RET
         
@@ -75,11 +72,11 @@ CFWRITE:
         CALL CFWAIT
         IN A, (CFREG7)
         AND 08H                     ;FILTER OUT DRQ
-        JP Z, CFWRITEE
+        JR Z, CFWRITEE
         LD A, (DE)
         OUT (CFREG0), A
         INC DE
-        JP CFWRITE
+        JR CFWRITE
 CFWRITEE:
         RET
         
