@@ -18,8 +18,8 @@ START:  MVI  A, 80H
 		SPHL
 		JMP INIT
 		
-		INCL "../common/utils.asm"
-        INCL "../common/hexdump.asm"
+		INCL "utils.asm"
+        INCL "hexdump.asm"
 
 INIT:
 	IF FULLSYS
