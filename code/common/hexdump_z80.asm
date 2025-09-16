@@ -10,7 +10,7 @@ HEXDUMP:
 	CALL OUT_CHAR
 	INC DE
 	DEC B
-	JP HEXDUMP
+	JR HEXDUMP
 
 ;Print the value in A in hex
 HEXDUMP_A:
@@ -30,7 +30,7 @@ HEXDUMP_A:
 HEXDUMP_NIB:
 	ADD A, 48	;48 is 0 in ascii
 	CP 57+1	;57 is 9 in ascii
-	JP C, HEXDUMP_NUM
+	JR C, HEXDUMP_NUM
 	ADD A, 65-57-1	;'A'-'9'-1
 HEXDUMP_NUM:
 	CALL OUT_CHAR
