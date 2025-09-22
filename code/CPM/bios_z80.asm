@@ -303,6 +303,13 @@ BIOS_WRITE_PROC:
         CP 1
         JR Z, BIOS_WRITE_IMMEDIATELY
         ; Assume C = 0, write can be deffered
+        
+        ; THIS IS TEMPORARY SOLUTION - REMOVE WHEN NOT NEEDED
+        ; THERE IS SOME PROBLEM WITH DEFFERING EXISTING SECTOR
+        ; WE WILL JUMP OVER IT TILL SOLUTION IS FOUND!!!!!!!!
+        JP BIOS_WRITE_IMMEDIATELY
+        ; END OF TEMPORARY SOLUTION
+        
         ; First read sector to have complete data in buffer
         CALL CALC_CFLBA_FROM_PART_ADR
         OR A         ; If A=0, no valid LBA calculated
