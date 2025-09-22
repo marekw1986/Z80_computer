@@ -99,7 +99,7 @@ IS32BIT_EQUAL:
 IS32BIT_EQUAL_LOOP:
     LD A, (DE)          	; Load byte from second value (ADDR2)
     CP (HL)           		; Compare with byte at first value (ADDR1)
-    JP NZ, IS32BIT_NOT_EQUAL   ; If not equal, jump to NOT_EQUAL
+    JR NZ, IS32BIT_NOT_EQUAL   ; If not equal, jump to NOT_EQUAL
     INC HL           		; Move to next byte in ADDR1
     INC DE           		; Move to next byte in ADDR2
     DEC B           		; Decrement byte counter
