@@ -10,6 +10,7 @@ PCFLBA3	    DS	 1
 PCFLBA2	    DS	 1
 PCFLBA1	    DS	 1
 PCFLBA0	    DS	 1
+DEFERREDWR  DS   1
 
 CFWAIT:
         IN A, (CFREG7)
@@ -94,12 +95,29 @@ CFRSECT_WITH_CACHE:
 		XOR A						; Store 0 in A to signalize no err
 		RET
 CFRSECT_WITH_CACHE_PERFORM:
+        ; Check if we had deferred write - if so, we need to write that data
+        ; out of buffer before reading new ones
+        LD A, (DEFERREDWR)
+        OR A
+        JR Z, CFRSECT_WITH_CACHE_PERFORM1       ; No deferred data to write in buffer - just read
+        ; Otherwise write data in buffer to CF card first
+        ; We need to use old LBA values for write!!!
+        CALL CFSWAPLBA
+        LD DE, BLKDAT
+        CALL CFWSECT
+        ; Check result of write operation
+        OR A
+        JR NZ, CFRSECT_WITH_CACHE_BAD
+        XOR A
+        LD (DEFERREDWR), A                      ; No longer defererred write - clear flag
+        CALL CFSWAPLBA                          ; Restore original LBA values
+CFRSECT_WITH_CACHE_PERFORM1:        
 		CALL CFSLBA						;SET LBA
 		LD A, 01H
-		OUT	(CFREG2), A						;READ ONE SECTOR
+		OUT (CFREG2), A						;READ ONE SECTOR
 		CALL CFWAIT
 		LD A, 20H						;READ SECTOR COMMAND
-		OUT	(CFREG7), A
+		OUT (CFREG7), A
 		LD	DE, BLKDAT
 		CALL CFREAD
 		CALL CFCHERR
@@ -148,6 +166,22 @@ CFGETMBR:
 		CALL CFREAD
 		CALL CFCHERR
 		RET
+        
+CFFLUSHDEFFERED:
+		LD A, (CFVAL)						; Check if we have valid data in buffer
+		OR A
+		RET Z                               ; If not, return
+        ; Check if we had deferred write
+        LD A, (DEFERREDWR)
+        OR A
+        RET Z                               ; No deferred data to write in buffer - just return
+        ; Otherwise write data in buffer to CF card
+        ; We use current setting of LBAs (no swap)
+        LD DE, BLKDAT
+        CALL CFWSECT
+        XOR A
+        LD (DEFERREDWR), A
+        RET
 
 ; This assumes that MBR is already in BLKDAT
 ; CALL CFGETMBR FIRST!
@@ -198,4 +232,35 @@ CFUPDPLBA:
         LD (PCFLBA1), A
         LD A, (CFLBA0)
         LD (PCFLBA0), A
+        RET
+
+CFSWAPLBA:
+        ; Swap CFLBA0 <-> PCFLBA0
+        LD A,(CFLBA0)
+        LD B,A
+        LD A,(PCFLBA0)
+        LD (CFLBA0),A
+        LD A,B
+        LD (PCFLBA0),A
+        ; Swap CFLBA1 <-> PCFLBA1
+        LD A,(CFLBA1)
+        LD B,A
+        LD A,(PCFLBA1)
+        LD (CFLBA1),A
+        LD A,B
+        LD (PCFLBA1),A
+        ; Swap CFLBA2 <-> PCFLBA2
+        LD A,(CFLBA2)
+        LD B,A
+        LD A,(PCFLBA2)
+        LD (CFLBA2),A
+        LD A,B
+        LD (PCFLBA2),A
+        ; Swap CFLBA3 <-> PCFLBA3
+        LD A,(CFLBA3)
+        LD B,A
+        LD A,(PCFLBA3)
+        LD (CFLBA3),A
+        LD A,B
+        LD (PCFLBA3),A
         RET
