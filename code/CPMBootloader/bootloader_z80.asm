@@ -189,15 +189,6 @@ JUMP_TO_CPM:
         DB 00H
         CALL NEWLINE
         JP BIOS_ADDR
-        
-CFERRM: DB   'CF ERROR: '
-        DB   CR
-STARTADDRSTR:
-		DB	 'Addr: '
-		DB	 CR
-SIZESTR:
-		DB	 'Size: '
-		DB	 CR
 
 		include "fonts1.asm"
 		include "ps2_scancodes.asm"
