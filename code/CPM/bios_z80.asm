@@ -289,118 +289,137 @@ BIOS_READ_PROC_RET
 		RET
 		  
 BIOS_WRITE_PROC:
-		PUSH HL				; Save content  of HL on original stack, then switch to bios stack
-		LD HL, 0000H
-		ADD HL, SP	; HL = HL + SP
-		LD (ORIGINAL_SP), HL
-		LD SP, BIOS_STACK
-		PUSH BC				; Now save remaining registers
-		PUSH DE
-        ; Check content of C - deblocking code
+        PUSH HL
+        LD HL, 0000H
+        ADD HL, SP
+        LD (ORIGINAL_SP), HL
+        LD SP, BIOS_STACK
+        PUSH BC
+        PUSH DE
         LD A, C
-        CP 2               ; Is it first sector of new track?
+        CP 2
         JR Z, BIOS_WRITE_NEW_TRACK
         CP 1
         JR Z, BIOS_WRITE_IMMEDIATELY
-        ; Assume C = 0, write can be deffered
-        
-        ; THIS IS TEMPORARY SOLUTION - REMOVE WHEN NOT NEEDED
-        ; THERE IS SOME PROBLEM WITH DEFFERING EXISTING SECTOR
-        ; WE WILL JUMP OVER IT TILL SOLUTION IS FOUND!!!!!!!!
-        JP BIOS_WRITE_IMMEDIATELY
-        ; END OF TEMPORARY SOLUTION
-        
-        ; First read sector to have complete data in buffer
+        ; C=0: write can be deferred
+
         CALL CALC_CFLBA_FROM_PART_ADR
-        OR A         ; If A=0, no valid LBA calculated
-        JR Z, BIOS_WRITE_FLUSH_DEFFERED_AND_ERR ; Flush deffered, return and report error
-		CALL CFRSECT_WITH_CACHE
-		OR A
-		JR NZ, BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
-		CALL BIOS_CALC_SECT_IN_BUFFER
-		; Now DE contains the 16-bit result of multiplying the original value by 128
-		; D holds the high byte and E holds the low byte of the result
-		; Calculate the address of the CP/M sector in the BLKDAT
-        CALL CFUPDPLBA
-		LD HL, BLKDAT
-		ADD HL, DE
-        EX HL, DE
-		; Addres of sector in BLKDAT is now in DE
-		LD HL, (DISK_DMA)	; Load source address to HL
-		LD BC, 0080H	; How many bytes to copy?
-		LDIR
-        ;No actual write, just deffer
+        OR A
+        JR Z, BIOS_WRITE_FLUSH_DEFFERED_AND_ERR
+        CALL CFRSECT_WITH_CACHE         ; cache hit: free. cache miss: flushes
+                                        ; any old dirty block first, then reads
+        OR A
+        JR NZ, BIOS_WRITE_RET_ERR
+        CALL BIOS_CALC_SECT_IN_BUFFER   ; DE = sector offset within BLKDAT
+        LD HL, BLKDAT
+        ADD HL, DE
+        EX HL, DE                       ; DE = &BLKDAT[offset]
+        LD HL, (DISK_DMA)               ; HL = source
+        LD BC, 0080H
+        LDIR                            ; merge 128 bytes into buffer
         LD A, 1
-        LD (DEFERREDWR), A  ; We deffer write
-        JR BIOS_WRITE_RET_OK                  
+        LD (DEFERREDWR), A              ; mark dirty, no card I/O yet
+        JR BIOS_WRITE_RET_OK
+
 BIOS_WRITE_IMMEDIATELY:
-        ; First read sector to have complete data in buffer
+        ; C=1: CP/M requires this sector committed to card right now
+        ; (used for directory writes - must be durable before BDOS returns)
         CALL CALC_CFLBA_FROM_PART_ADR
-        OR A         ; If A=0, no valid LBA calculated
-        JR Z, BIOS_WRITE_FLUSH_DEFFERED_AND_ERR ; Flush deffered, return and report error
-		CALL CFRSECT_WITH_CACHE
-		OR A
-		JR NZ, BIOS_WRITE_RET_ERR			; If we ae unable to read sector, it ends here. We would risk FS crash otherwise.
-		CALL BIOS_CALC_SECT_IN_BUFFER
-		; Now DE contains the 16-bit result of multiplying the original value by 128
-		; D holds the high byte and E holds the low byte of the result
-		; Calculate the address of the CP/M sector in the BLKDAT
-		LD HL, BLKDAT
-		ADD HL, DE
-        EX HL, DE
-		; Addres of sector in BLKDAT is now in DE
-		LD HL, (DISK_DMA)	; Load source address to HL
-		; Replace HL and DE. HL will now contain address od sector in BLKDAT and DE will store source from DISK_DMA
-		LD BC, 0080H	; How many bytes to copy?
-		LDIR
-		; Buffer is updated with new sector data. Perform write.
-		LD DE, BLKDAT
-		CALL CFWSECT
-		OR A			; Check result
-		JR NZ, BIOS_WRITE_RET_ERR
-		JR BIOS_WRITE_RET_OK	
-BIOS_WRITE_NEW_TRACK
-        ; No need to calculate sector location in BLKDAT.
-        ; Thanks to deblocking code = 2 we know it is first secor of new track
-        ; Just fill remaining bytes of buffer with 0xE5 and copy secotr to the
-        ; beginning of BLKDAT. Then write.
-        LD HL, BLKDAT+128
+        OR A
+        JR Z, BIOS_WRITE_FLUSH_DEFFERED_AND_ERR
+        CALL CFRSECT_WITH_CACHE         ; may flush a dirty block for different LBA
+        OR A
+        JR NZ, BIOS_WRITE_RET_ERR
+        CALL BIOS_CALC_SECT_IN_BUFFER
+        LD HL, BLKDAT
+        ADD HL, DE
+        EX HL, DE                       ; DE = &BLKDAT[offset]
+        LD HL, (DISK_DMA)
+        LD BC, 0080H
+        LDIR
+        ; Now write the whole 512-byte block immediately
+        LD DE, BLKDAT
+        CALL CFWSECT
+        OR A
+        JR NZ, BIOS_WRITE_RET_ERR
+        ; BUG2 FIX: clear DEFERREDWR after a successful immediate write.
+        ; Without this, if a C=0 deferred write had previously set DEFERREDWR=1
+        ; for this same LBA, it would stay set even though the data is now safely
+        ; on the card (CFWSECT just committed it). The next cache eviction would
+        ; then do a spurious redundant write of this LBA.
+        XOR A
+        LD (DEFERREDWR), A
+        JR BIOS_WRITE_RET_OK
+
+BIOS_WRITE_NEW_TRACK:
+        ; C=2: first sector of a freshly allocated block.
+        ; CP/M guarantees this is the FIRST write to this 512-byte CF block,
+        ; so we don't need to read the card first - we construct the whole
+        ; block in RAM (1 real sector + 3 x 0xE5 filler) and defer the write.
+        ;
+        ; BUG1 FIX: flush any pending deferred write BEFORE touching BLKDAT.
+        ; The old code went straight to filling BLKDAT with 0xE5, which
+        ; overwrote whatever dirty data was sitting in the buffer from a
+        ; previous C=0 deferred write, then called CFUPDPLBA which clobbered
+        ; the old LBA reference, making that dirty block permanently
+        ; unrecoverable. This is the data-loss bug that caused the original
+        ; author to bypass deferred writes entirely with JP BIOS_WRITE_IMMEDIATELY.
+        CALL CFFLUSHDEFFERED
+        OR A
+        JR NZ, BIOS_WRITE_RET_ERR      ; flush of old block failed - stop here.
+                                        ; DEFERREDWR stays 1 so old block is
+                                        ; not silently abandoned; caller gets error.
+
+        ; Now BLKDAT is safe to overwrite.
+        LD HL, BLKDAT+128               ; fill sectors 1-3 with 0xE5 (unallocated)
         LD (HL), 0E5H
         LD DE, BLKDAT+128+1
         LD BC, 384-1
         LDIR
-        LD DE, BLKDAT
- 		; Addres of sector in BLKDAT is now in DE
-		LD HL, (DISK_DMA)	; Load source address to HL
-		LD BC, 0080H	; How many bytes to copy?
-		LDIR
-		; Buffer is updated with new sector data. Perform write.
+        LD DE, BLKDAT                   ; copy sector 0 from CP/M's DMA buffer
+        LD HL, (DISK_DMA)
+        LD BC, 0080H
+        LDIR
+
         CALL CALC_CFLBA_FROM_PART_ADR
-        OR A         ; If A=0, no valid LBA calculated
-        JR Z, BIOS_WRITE_FLUSH_DEFFERED_AND_ERR ; Flush deffered, return and report error
+        OR A
+        JR Z, BIOS_WRITE_FLUSH_DEFFERED_AND_ERR
+
+        ; Update LBA bookkeeping to describe the NEW block now sitting in BLKDAT.
+        ; CFUPDPLBA must happen BEFORE setting DEFERREDWR=1, so that if
+        ; CFRSECT_WITH_CACHE is called for this same LBA next, it sees a
+        ; cache hit (CFLBA==PCFLBA, CFVAL=1) rather than evicting and
+        ; re-reading from the card (which would overwrite our freshly built block).
         CALL CFUPDPLBA
         LD A, 1
-        LD (DEFERREDWR), A  ; We deffer write
-        JR BIOS_WRITE_RET_OK     
+        LD (CFVAL), A                   ; BLKDAT is now valid for this LBA
+        LD A, 1
+        LD (DEFERREDWR), A              ; defer the physical write
+        JR BIOS_WRITE_RET_OK
+
 BIOS_WRITE_FLUSH_DEFFERED_AND_ERR:
         CALL CFFLUSHDEFFERED
+        ; CFFLUSHDEFFERED's result is not checked here: we already have a
+        ; harder error (invalid LBA) to report. If the flush also failed,
+        ; DEFERREDWR is left set by CFFLUSHDEFFERED so data is not silently
+        ; abandoned - a later retry or eviction can still recover it.
 BIOS_WRITE_RET_ERR:
         XOR A
         LD (CFVAL), A
-		LD A, 1
-		JR BIOS_WRITE_RET
+        LD A, 1
+        JR BIOS_WRITE_RET
 BIOS_WRITE_RET_OK:
         LD A, 01H
         LD (CFVAL), A
         CALL CFUPDPLBA
-		XOR A				; A = 0
+        XOR A
 BIOS_WRITE_RET:
-		POP DE
-		POP BC	
-		LD HL, (ORIGINAL_SP); Restore original stack
-		LD SP, HL
-		POP HL			; Restore original content of HL
-		RET
+        POP DE
+        POP BC
+        LD HL, (ORIGINAL_SP)
+        LD SP, HL
+        POP HL
+        RET
 		 
 BIOS_PRSTAT_PROC:
 		XOR A ; A = 0, Printer is never ready
