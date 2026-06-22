@@ -114,6 +114,14 @@ BIOS_WBOOT_PROC:
 		; We can't just blindly set SP=bios_stack here because disk_read can overwrite it!
 		; But we CAN set to use other areas that we KNOW are not currently in use!
 		LD SP, BIOS_WBOOT_STACK		;
+        CALL CFFLUSHDEFFERED
+        OR A
+        JP Z, BIOS_WBOOT_FLUSH_OK
+        CALL IPUTS
+        DB 'WARNING: deferred write flush failed on warm boot.'
+        DB CR
+        DB 00H
+BIOS_WBOOT_FLUSH_OK:
 		LD C, 0
 		CALL BIOS_SELDSK
 		LD BC, WB_TRK
